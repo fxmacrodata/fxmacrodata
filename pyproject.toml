@@ -36,15 +36,6 @@ Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=pac
 Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
-<<<<<<< HEAD
-=======
-# ✅ Correct: dependencies as a top-level array under [project]
-dependencies = [
-    "requests>=2.28",
-    "aiohttp>=3.8"
-]
-
->>>>>>> bbcf18e (change dependencies again)
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
