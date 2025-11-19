@@ -8,4 +8,3 @@ ruff>=0.0
 mypy>=1.5
 black>=24.0
 types-requests>=2.28
-types-aiohttp>=3.8

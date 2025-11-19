@@ -48,7 +48,6 @@ dev = [
     "black>=24.0",
     # type stubs for static type checking
     "types-requests>=2.28",
-    "types-aiohttp>=3.8"
 ]
 
 [tool.setuptools.packages.find]
