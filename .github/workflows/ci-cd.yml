@@ -91,8 +91,15 @@ jobs:
             echo "Tags already exist. Skipping bootstrap."
           fi
         env:
+<<<<<<< HEAD
           # GITHUB_TOKEN is required for pushing the initial tag
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+=======
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Running semantic-release for dev..."
+          semantic-release publish
+>>>>>>> f236566 (semantic release publish)
 
       # 1. Automatic version bump & tag (Dev Branch Only)
       - name: Version Bump & Tag (Dev Branch)
