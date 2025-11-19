@@ -25,32 +25,35 @@ keywords = [
     "rapidapi",
 ]
 
-# Links shown on your PyPI project page
 [project.urls]
 Homepage = "https://fxmacrodata.com/?utm_source=pypi&utm_medium=package&utm_campaign=python_sdk"
 Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=package&utm_campaign=python_sdk"
 Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
-# What your package needs
 [project.dependencies]
 requests = ">=2.28"
 aiohttp = ">=3.8"
 
-# Optional: extras for larger deployments
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "black",
-    "ruff",
-    "mypy",
+    "pytest>=8.0",
+    "pytest-mock>=3.10",
+    "python-dotenv>=1.1",
+    "python-semantic-release>=7.23",
+    "twine>=4.0",
+    "build>=1.0",
+    "ruff>=0.0",
+    "mypy>=1.5",
+    "black>=24.0",
+    # type stubs for static type checking
+    "types-requests>=2.28",
+    "types-aiohttp>=3.8"
 ]
 
-# Tell setuptools which packages to include
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["fxmacrodata*"]
 
-# Include non-Python files if needed (not required right now)
 [tool.setuptools]
 include-package-data = true
