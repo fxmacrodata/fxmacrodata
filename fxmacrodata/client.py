@@ -2,8 +2,7 @@ import requests
 from .exceptions import FXMacroDataError
 
 class Client:
-    BASE_URL = "https://fxmacrodata.p.rapidapi.com/api"
-    RAPIDAPI_HOST = "fxmacrodata.p.rapidapi.com"
+    BASE_URL = "https://fxmacrodata.com/api"
 
     def __init__(self, api_key: str = None):
         """
@@ -17,13 +16,11 @@ class Client:
         url = f"{self.BASE_URL}/{currency}/{indicator}"
 
         headers = {}
+        # Non-USD endpoints require API key
         if currency != "usd":
             if not self.api_key:
-                raise FXMacroDataError(
-                    f"API key required for {currency.upper()} endpoints."
-                )
-            headers["x-rapidapi-key"] = self.api_key
-            headers["x-rapidapi-host"] = self.RAPIDAPI_HOST
+                raise FXMacroDataError(f"API key required for {currency.upper()} endpoints.")
+            headers["X-API-Key"] = self.api_key
 
         params = {}
         if start_date:
@@ -31,7 +28,11 @@ class Client:
         if end_date:
             params["end_date"] = end_date
 
-        response = requests.get(url, headers=headers, params=params)
+        try:
+            response = requests.get(url, headers=headers, params=params)
+        except Exception as e:
+            raise FXMacroDataError(f"Request failed: {e}")
+
         if response.status_code != 200:
             raise FXMacroDataError(f"{response.status_code} - {response.text}")
 

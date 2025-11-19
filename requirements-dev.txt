@@ -1,0 +1,9 @@
+pytest>=8.0
+pytest-mock>=3.10
+python-dotenv>=1.1
+python-semantic-release>=7.23
+twine>=4.0
+build>=1.0
+ruff>=0.0
+mypy>=1.5
+black>=24.0

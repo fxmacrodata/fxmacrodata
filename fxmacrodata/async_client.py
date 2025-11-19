@@ -1,10 +1,8 @@
 import aiohttp
-import asyncio
 from .exceptions import FXMacroDataError
 
 class AsyncClient:
-    BASE_URL = "https://fxmacrodata.p.rapidapi.com/api"
-    RAPIDAPI_HOST = "fxmacrodata.p.rapidapi.com"
+    BASE_URL = "https://fxmacrodata.com/api"
 
     def __init__(self, api_key: str = None):
         """
@@ -27,17 +25,20 @@ class AsyncClient:
         url = f"{self.BASE_URL}/{currency}/{indicator}"
 
         headers = {}
+        # Non-USD endpoints require API key
         if currency != "usd":
             if not self.api_key:
                 raise FXMacroDataError(f"API key required for {currency.upper()} endpoints.")
-            headers["x-rapidapi-key"] = self.api_key
-            headers["x-rapidapi-host"] = self.RAPIDAPI_HOST
+            headers["X-API-Key"] = self.api_key
 
         params = {}
         if start_date:
             params["start_date"] = start_date
         if end_date:
             params["end_date"] = end_date
+
+        if not self.session:
+            self.session = aiohttp.ClientSession()
 
         async with self.session.get(url, headers=headers, params=params) as resp:
             if resp.status != 200:

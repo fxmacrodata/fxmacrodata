@@ -1,0 +1,113 @@
+name: FXMacroData CI/CD
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  dev_pipeline:
+    if: github.ref == 'refs/heads/dev'
+    name: Dev Branch: Test + TestPyPI + Auto Version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run linter
+        run: ruff check fxmacrodata tests
+
+      - name: Type check
+        run: mypy fxmacrodata
+
+      - name: Check formatting
+        run: black --check fxmacrodata tests
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Set Git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Automatic version bump & tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release publish --branch dev --repository-url https://github.com/${{ github.repository }}.git --no-push
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to TestPyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
+        run: twine upload --repository testpypi dist/* --skip-existing
+
+  main_pipeline:
+    if: github.ref == 'refs/heads/main'
+    name: Main Branch: Full Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run linter
+        run: ruff check fxmacrodata tests
+
+      - name: Type check
+        run: mypy fxmacrodata
+
+      - name: Check formatting
+        run: black --check fxmacrodata tests
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Set Git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync version from dev (semantic-release)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/* --skip-existing
