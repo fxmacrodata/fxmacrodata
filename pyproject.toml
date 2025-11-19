@@ -31,7 +31,7 @@ Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=pac
 Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
-[project.dependencies]
+# ✅ Correct: dependencies as a top-level array under [project]
 dependencies = [
     "requests>=2.28",
     "aiohttp>=3.8"
