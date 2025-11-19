@@ -1,4 +1,4 @@
-import aiohttp
+import aiohttp  # type: ignore
 from typing import Optional
 from .exceptions import FXMacroDataError
 
