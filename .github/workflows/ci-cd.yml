@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "Running semantic-release for main (creating final release)..."
           # This command syncs the version from the latest dev tag and creates the final release
-          python -m semantic_release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
+          python -m semantic_release publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
