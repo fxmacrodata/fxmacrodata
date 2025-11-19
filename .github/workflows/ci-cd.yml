@@ -58,9 +58,9 @@ jobs:
       - name: Type Check (Mypy)
         run: mypy fxmacrodata
 
-      - name: Check Code Format (Black)
-        # Use --check to ensure code is formatted without modifying files in CI
-        run: black --check fxmacrodata tests
+      - name: Autoformat code with Black
+        # Restored to run the formatter to apply fixes, not just check
+        run: black fxmacrodata tests
 
       - name: Run Tests (Pytest)
         env:
