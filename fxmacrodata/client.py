@@ -1,22 +1,28 @@
 import requests
+from typing import Optional
 from .exceptions import FXMacroDataError
 
 class Client:
     BASE_URL = "https://fxmacrodata.com/api"
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Optional[str] = None):
         """
         Synchronous FXMacroData Client.
         api_key: Required for non-USD currencies. USD is public.
         """
         self.api_key = api_key
 
-    def get(self, currency: str, indicator: str, start_date: str = None, end_date: str = None):
+    def get(
+        self,
+        currency: str,
+        indicator: str,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> dict:
         currency = currency.lower()
         url = f"{self.BASE_URL}/{currency}/{indicator}"
 
         headers = {}
-        # Non-USD endpoints require API key
         if currency != "usd":
             if not self.api_key:
                 raise FXMacroDataError(f"API key required for {currency.upper()} endpoints.")
