@@ -16,7 +16,11 @@ jobs:
     name: Build, Test, and Publish (${{ github.ref_name }})
     runs-on: ubuntu-latest
     
+<<<<<<< HEAD
     # Define environment flags for conditional steps
+=======
+    # Define environment flags for conditional steps, making the steps below cleaner
+>>>>>>> ec2fe64 (split dev and main)
     env:
       IS_MAIN: ${{ github.ref_name == 'main' }}
       IS_DEV: ${{ github.ref_name == 'dev' }}
@@ -58,9 +62,15 @@ jobs:
       - name: Type Check (Mypy)
         run: mypy fxmacrodata
 
+<<<<<<< HEAD
       - name: Autoformat code with Black
         # The formatter runs to apply fixes, not just check
         run: black fxmacrodata tests
+=======
+      - name: Check Code Format (Black)
+        # Use --check to ensure code is formatted without modifying files in CI
+        run: black --check fxmacrodata tests
+>>>>>>> ec2fe64 (split dev and main)
 
       - name: Run Tests (Pytest)
         env:
@@ -78,6 +88,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+<<<<<<< HEAD
       # Bootstrap v0.0.0 tag if no tags exist (only on main)
       - name: Bootstrap Initial Tag (If Repository is Empty)
         # Check if any tags exist; if not, create the v0.0.0 starting tag
@@ -121,6 +132,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+=======
+      # 1. Automatic version bump & tag (Dev Branch Only)
+      - name: Version Bump & Tag (Dev Branch)
+        if: env.IS_DEV == 'true'
+        run: |
+          echo "Running semantic-release for dev (creating beta tag)..."
+          python -m semantic_release publish
+        env:
+          # GITHUB_TOKEN is required for pushing tags
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Sync version and create Release (Main Branch Only)
+      - name: Sync Version and Create GitHub Release (Main Branch)
+        if: env.IS_MAIN == 'true'
+        run: |
+          echo "Running semantic-release for main (creating final release)..."
+          # This command syncs the version from the latest dev tag and creates the final release
+          python -m semantic_release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+>>>>>>> ec2fe64 (split dev and main)
       # 3. Build Package (for both)
       - name: Build Source and Wheel Distributions
         # Run if either dev or main triggered the workflow
