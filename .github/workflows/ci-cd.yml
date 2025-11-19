@@ -42,6 +42,11 @@ jobs:
           pip install -r requirements-dev.txt
           pip list
 
+      - name: Install package in editable mode
+        run: |
+          echo "Installing fxmacrodata in editable mode..."
+          pip install -e .
+
       - name: Run linter
         run: |
           echo "Running ruff linter..."
