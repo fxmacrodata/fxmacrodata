@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   dev_pipeline:
-    if: github.ref == 'refs/heads/dev'
     name: Dev Branch: Test + TestPyPI + Auto Version
     runs-on: ubuntu-latest
     strategy:
@@ -94,7 +93,6 @@ jobs:
           echo "Upload finished."
 
   main_pipeline:
-    if: github.ref == 'refs/heads/main'
     name: Main Branch: Full Release
     runs-on: ubuntu-latest
     strategy:
