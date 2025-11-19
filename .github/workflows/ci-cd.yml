@@ -21,28 +21,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug: show branch & repo
+        run: |
+          echo "Branch: $GITHUB_REF"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Runner OS: $RUNNER_OS"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Debug: Python & pip versions
+        run: |
+          python --version
+          pip --version
+
       - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+        run: |
+          echo "Installing dev dependencies..."
+          pip install -r requirements-dev.txt
+          pip list
 
       - name: Run linter
-        run: ruff check fxmacrodata tests
+        run: |
+          echo "Running ruff linter..."
+          ruff check fxmacrodata tests
 
       - name: Type check
-        run: mypy fxmacrodata
+        run: |
+          echo "Running mypy type check..."
+          mypy fxmacrodata
 
       - name: Check formatting
-        run: black --check fxmacrodata tests
+        run: |
+          echo "Checking code formatting with black..."
+          black --check fxmacrodata tests
 
       - name: Run tests
-        run: pytest -v
+        run: |
+          echo "Running pytest..."
+          pytest -v
+          echo "Tests finished with status $?"
 
       - name: Set Git config
         run: |
+          echo "Setting git user for tagging..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -50,16 +74,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Running semantic-release for dev..."
           semantic-release publish --branch dev --repository-url https://github.com/${{ github.repository }}.git --no-push
 
       - name: Build package
-        run: python -m build
+        run: |
+          echo "Building package..."
+          python -m build
+          echo "Contents of dist/:"
+          ls -la dist/
 
       - name: Publish to TestPyPI
         env:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-        run: twine upload --repository testpypi dist/* --skip-existing
+        run: |
+          echo "Uploading to TestPyPI..."
+          twine upload --repository testpypi dist/* --skip-existing
+          echo "Upload finished."
 
   main_pipeline:
     if: github.ref == 'refs/heads/main'
@@ -72,28 +104,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug: show branch & repo
+        run: |
+          echo "Branch: $GITHUB_REF"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Runner OS: $RUNNER_OS"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Debug: Python & pip versions
+        run: |
+          python --version
+          pip --version
+
       - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+        run: |
+          echo "Installing dev dependencies..."
+          pip install -r requirements-dev.txt
+          pip list
 
       - name: Run linter
-        run: ruff check fxmacrodata tests
+        run: |
+          echo "Running ruff linter..."
+          ruff check fxmacrodata tests
 
       - name: Type check
-        run: mypy fxmacrodata
+        run: |
+          echo "Running mypy type check..."
+          mypy fxmacrodata
 
       - name: Check formatting
-        run: black --check fxmacrodata tests
+        run: |
+          echo "Checking code formatting with black..."
+          black --check fxmacrodata tests
 
       - name: Run tests
-        run: pytest -v
+        run: |
+          echo "Running pytest..."
+          pytest -v
+          echo "Tests finished with status $?"
 
       - name: Set Git config
         run: |
+          echo "Setting git user for tagging..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -101,13 +157,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Running semantic-release for main..."
           semantic-release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
 
       - name: Build package
-        run: python -m build
+        run: |
+          echo "Building package..."
+          python -m build
+          echo "Contents of dist/:"
+          ls -la dist/
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: twine upload dist/* --skip-existing
+        run: |
+          echo "Uploading to PyPI..."
+          twine upload dist/* --skip-existing
+          echo "Upload finished."
