@@ -25,17 +25,16 @@ keywords = [
     "rapidapi",
 ]
 
+dependencies = [
+    "requests>=2.28",
+    "aiohttp>=3.8"
+]
+
 [project.urls]
 Homepage = "https://fxmacrodata.com/?utm_source=pypi&utm_medium=package&utm_campaign=python_sdk"
 Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=package&utm_campaign=python_sdk"
 Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
-
-# ✅ Correct: dependencies as a top-level array under [project]
-dependencies = [
-    "requests>=2.28",
-    "aiohttp>=3.8"
-]
 
 [project.optional-dependencies]
 dev = [
