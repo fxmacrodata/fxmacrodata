@@ -1,182 +1,122 @@
-name: FXMacroData CI/CD
+name: FXMacroData CI/CD Pipeline
 
 on:
   push:
     branches:
       - dev
       - main
+  # Optional: allow manual runs for testing
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write # Needed for semantic-release to push tags/create releases
 
 jobs:
-  dev_pipeline:
-    name: Dev Branch Test + TestPyPI + Auto Version
+  build_test_and_release:
+    name: Build, Test, and Publish (${{ github.ref_name }})
     runs-on: ubuntu-latest
+    
+    # Define environment flags for conditional steps, making the steps below cleaner
+    env:
+      IS_MAIN: ${{ github.ref_name == 'main' }}
+      IS_DEV: ${{ github.ref_name == 'dev' }}
+      
     strategy:
       matrix:
         python-version: [3.11]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository (fetch full history for semantic-release)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # MANDATORY for semantic-release to read commit history
 
-      - name: Debug show branch & repo
-        run: |
-          echo "Branch: $GITHUB_REF"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Runner OS: $RUNNER_OS"
-
-      - name: Set up Python
+      # ----------------------------------------------------
+      # Environment Setup
+      # ----------------------------------------------------
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip' # Speeds up subsequent runs
 
-      - name: Debug Python & pip versions
+      - name: Install dependencies
         run: |
-          python --version
-          pip --version
-
-      - name: Install dev dependencies
-        run: |
-          echo "Installing dev dependencies..."
+          # Install development dependencies from requirements-dev.txt
           pip install -r requirements-dev.txt
-          pip list
-
-      - name: Install package in editable mode
-        run: |
-          echo "Installing fxmacrodata in editable mode..."
+          # Install tools needed for the pipeline
+          pip install build twine python-semantic-release
+          # Install the local package in editable mode
           pip install -e .
 
-      - name: Run linter
-        run: |
-          echo "Running ruff linter..."
-          ruff check fxmacrodata tests
+      # ----------------------------------------------------
+      # Quality Checks (Run on both branches)
+      # ----------------------------------------------------
+      - name: Run Linter (Ruff)
+        run: ruff check fxmacrodata tests
 
-      - name: Type check
-        run: |
-          echo "Running mypy type check..."
-          mypy fxmacrodata
+      - name: Type Check (Mypy)
+        run: mypy fxmacrodata
 
-      - name: Autoformat code with Black
-        run: |
-          echo "Autoformatting code with Black..."
-          black fxmacrodata tests
+      - name: Check Code Format (Black)
+        # Use --check to ensure code is formatted without modifying files in CI
+        run: black --check fxmacrodata tests
 
-      - name: Run tests
+      - name: Run Tests (Pytest)
         env:
+          # API key is only needed for tests, so it's scoped here
           FXMACRODATA_API_KEY: ${{ secrets.FXMACRODATA_API_KEY }}
-        run: |
-          echo "Running pytest..."
-          pytest -v
-          echo "Tests finished with status $?"
+        run: pytest -v
 
-      - name: Set Git config
+      # ----------------------------------------------------
+      # Conditional Release/Publish Logic
+      # ----------------------------------------------------
+      
+      # Set Git config for semantic-release (required for tagging/releasing on both branches)
+      - name: Set Git config for semantic-release
         run: |
-          echo "Setting git user for tagging..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Automatic version bump & tag
+      # 1. Automatic version bump & tag (Dev Branch Only)
+      - name: Version Bump & Tag (Dev Branch)
+        if: env.IS_DEV == 'true'
+        run: |
+          echo "Running semantic-release for dev (creating beta tag)..."
+          python -m semantic_release publish
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Running semantic-release for dev..."
-          semantic-release publish
+          # GITHUB_TOKEN is required for pushing tags
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build package
+      # 2. Sync version and create Release (Main Branch Only)
+      - name: Sync Version and Create GitHub Release (Main Branch)
+        if: env.IS_MAIN == 'true'
         run: |
-          echo "Building package..."
-          python -m build
-          echo "Contents of dist/:"
-          ls -la dist/
+          echo "Running semantic-release for main (creating final release)..."
+          # This command syncs the version from the latest dev tag and creates the final release
+          python -m semantic_release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 3. Build Package (for both)
+      - name: Build Source and Wheel Distributions
+        # Run if either dev or main triggered the workflow
+        if: env.IS_DEV == 'true' || env.IS_MAIN == 'true'
+        run: python -m build
+
+      # 4. Publish to TestPyPI (Dev Branch Only)
       - name: Publish to TestPyPI
+        if: env.IS_DEV == 'true'
         env:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-        run: |
-          echo "Uploading to TestPyPI..."
-          twine upload --repository testpypi dist/* --skip-existing
-          echo "Upload finished."
+          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+        run: twine upload dist/* --skip-existing
 
-  main_pipeline:
-    name: Main Branch Full Release
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Debug show branch & repo
-        run: |
-          echo "Branch: $GITHUB_REF"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Runner OS: $RUNNER_OS"
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Debug Python & pip versions
-        run: |
-          python --version
-          pip --version
-
-      - name: Install dev dependencies
-        run: |
-          echo "Installing dev dependencies..."
-          pip install -r requirements-dev.txt
-          pip list
-
-      - name: Run linter
-        run: |
-          echo "Running ruff linter..."
-          ruff check fxmacrodata tests
-
-      - name: Type check
-        run: |
-          echo "Running mypy type check..."
-          mypy fxmacrodata
-
-      - name: Autoformat code with Black
-        run: |
-          echo "Autoformatting code with Black..."
-          black fxmacrodata tests
-
-      - name: Run tests
-        run: |
-          echo "Running pytest..."
-          pytest -v
-          echo "Tests finished with status $?"
-
-      - name: Set Git config
-        run: |
-          echo "Setting git user for tagging..."
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Sync version from dev (semantic-release)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Running semantic-release for main..."
-          semantic-release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
-
-      - name: Build package
-        run: |
-          echo "Building package..."
-          python -m build
-          echo "Contents of dist/:"
-          ls -la dist/
-
+      # 5. Publish to PyPI (Main Branch Only)
       - name: Publish to PyPI
+        if: env.IS_MAIN == 'true'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          echo "Uploading to PyPI..."
-          twine upload dist/* --skip-existing
-          echo "Upload finished."
+        run: twine upload dist/* --skip-existing
