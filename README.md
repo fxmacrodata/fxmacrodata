@@ -2,8 +2,8 @@
 
 ![PyPI Version](https://img.shields.io/pypi/v/fxmacrodata?color=blue&logo=python&style=flat-square)
 ![Python Versions](https://img.shields.io/pypi/pyversions/fxmacrodata?style=flat-square)
-![License](https://img.shields.io/github/license/yourusername/fxmacrodata?style=flat-square)
-![Build](https://img.shields.io/github/actions/workflow/status/yourusername/fxmacrodata/python-package.yml?style=flat-square&logo=github)
+![License](https://img.shields.io/github/license/fxmacrodata/fxmacrodata?style=flat-square)
+![Build](https://img.shields.io/github/actions/workflow/status/fxmacrodata/fxmacrodata/ci-cd.yml?style=flat-square&logo=github)
 
 The **FXMacroData Python SDK** is a lightweight, easy-to-use client for fetching **forex macroeconomic data** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
