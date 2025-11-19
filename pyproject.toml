@@ -32,8 +32,10 @@ Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
 [project.dependencies]
-requests = ">=2.28"
-aiohttp = ">=3.8"
+dependencies = [
+    "requests>=2.28",
+    "aiohttp>=3.8"
+]
 
 [project.optional-dependencies]
 dev = [
