@@ -63,6 +63,7 @@ jobs:
         run: mypy fxmacrodata
 
 <<<<<<< HEAD
+<<<<<<< HEAD
       - name: Autoformat code with Black
         # The formatter runs to apply fixes, not just check
         run: black fxmacrodata tests
@@ -71,6 +72,11 @@ jobs:
         # Use --check to ensure code is formatted without modifying files in CI
         run: black --check fxmacrodata tests
 >>>>>>> ec2fe64 (split dev and main)
+=======
+      - name: Autoformat code with Black
+        # Restored to run the formatter to apply fixes, not just check
+        run: black fxmacrodata tests
+>>>>>>> 15ce3a5 (black autoformat)
 
       - name: Run Tests (Pytest)
         env:
