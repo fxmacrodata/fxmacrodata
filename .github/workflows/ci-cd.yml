@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   dev_pipeline:
-    name: Dev Branch: Test + TestPyPI + Auto Version
+    name: Dev Branch Test + TestPyPI + Auto Version
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug: show branch & repo
+      - name: Debug show branch & repo
         run: |
           echo "Branch: $GITHUB_REF"
           echo "Repository: $GITHUB_REPOSITORY"
@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Debug: Python & pip versions
+      - name: Debug Python & pip versions
         run: |
           python --version
           pip --version
@@ -93,7 +93,7 @@ jobs:
           echo "Upload finished."
 
   main_pipeline:
-    name: Main Branch: Full Release
+    name: Main Branch Full Release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -102,7 +102,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug: show branch & repo
+      - name: Debug show branch & repo
         run: |
           echo "Branch: $GITHUB_REF"
           echo "Repository: $GITHUB_REPOSITORY"
@@ -113,7 +113,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Debug: Python & pip versions
+      - name: Debug Python & pip versions
         run: |
           python --version
           pip --version
