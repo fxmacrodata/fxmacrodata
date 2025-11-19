@@ -63,6 +63,8 @@ jobs:
           black fxmacrodata tests
 
       - name: Run tests
+        env:
+          FXMACRODATA_API_KEY: ${{ secrets.FXMACRODATA_API_KEY }}
         run: |
           echo "Running pytest..."
           pytest -v
