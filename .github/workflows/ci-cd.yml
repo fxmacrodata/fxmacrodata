@@ -16,7 +16,7 @@ jobs:
     name: Build, Test, and Publish (${{ github.ref_name }})
     runs-on: ubuntu-latest
     
-    # Define environment flags for conditional steps, making the steps below cleaner
+    # Define environment flags for conditional steps
     env:
       IS_MAIN: ${{ github.ref_name == 'main' }}
       IS_DEV: ${{ github.ref_name == 'dev' }}
@@ -59,14 +59,8 @@ jobs:
         run: mypy fxmacrodata
 
       - name: Autoformat code with Black
-<<<<<<< HEAD
-        # Restored to run the formatter to apply fixes, not just check
+        # The formatter runs to apply fixes, not just check
         run: black fxmacrodata tests
-=======
-        run: |
-          echo "Autoformatting code with Black..."
-          black fxmacrodata tests
->>>>>>> 6c2b51b (black autoformat)
 
       - name: Run Tests (Pytest)
         env:
@@ -84,7 +78,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # NEW: Bootstrap v0.0.0 tag if no tags exist
+      # Bootstrap v0.0.0 tag if no tags exist (only on main)
       - name: Bootstrap Initial Tag (If Repository is Empty)
         # Check if any tags exist; if not, create the v0.0.0 starting tag
         if: github.ref_name == 'main'
@@ -115,7 +109,7 @@ jobs:
         if: env.IS_MAIN == 'true'
         run: |
           echo "Running semantic-release for main (creating final release)..."
-          # CRITICAL FIX: Reverted to the simple command, relying on project configuration.
+          # Using the minimal command that works for your configuration
           python -m semantic_release publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -132,88 +126,8 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-<<<<<<< HEAD
           TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
         run: twine upload dist/* --skip-existing
-=======
-        run: |
-          echo "Uploading to TestPyPI..."
-          twine upload --repository testpypi dist/* --skip-existing
-          echo "Upload finished."
-
-  main_pipeline:
-    name: Main Branch Full Release
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Debug show branch & repo
-        run: |
-          echo "Branch: $GITHUB_REF"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Runner OS: $RUNNER_OS"
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Debug Python & pip versions
-        run: |
-          python --version
-          pip --version
-
-      - name: Install dev dependencies
-        run: |
-          echo "Installing dev dependencies..."
-          pip install -r requirements-dev.txt
-          pip list
-
-      - name: Run linter
-        run: |
-          echo "Running ruff linter..."
-          ruff check fxmacrodata tests
-
-      - name: Type check
-        run: |
-          echo "Running mypy type check..."
-          mypy fxmacrodata
-
-      - name: Autoformat code with Black
-        run: |
-          echo "Autoformatting code with Black..."
-          black fxmacrodata tests
-
-      - name: Run tests
-        run: |
-          echo "Running pytest..."
-          pytest -v
-          echo "Tests finished with status $?"
-
-      - name: Set Git config
-        run: |
-          echo "Setting git user for tagging..."
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Sync version from dev (semantic-release)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Running semantic-release for main..."
-          semantic-release publish --branch main --repository-url https://github.com/${{ github.repository }}.git
-
-      - name: Build package
-        run: |
-          echo "Building package..."
-          python -m build
-          echo "Contents of dist/:"
-          ls -la dist/
->>>>>>> 6c2b51b (black autoformat)
 
       # 5. Publish to PyPI (Main Branch Only)
       - name: Publish to PyPI
