@@ -78,6 +78,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      # NEW: Bootstrap v0.0.0 tag if no tags exist
+      - name: Bootstrap Initial Tag (If Repository is Empty)
+        # Check if any tags exist; if not, create the v0.0.0 starting tag
+        if: github.ref_name == 'main'
+        run: |
+          if [ -z "$(git tag -l)" ]; then
+            echo "No tags found. Creating initial tag v0.0.0 to bootstrap semantic-release."
+            git tag v0.0.0
+            git push origin v0.0.0
+          else
+            echo "Tags already exist. Skipping bootstrap."
+          fi
+        env:
+          # GITHUB_TOKEN is required for pushing the initial tag
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # 1. Automatic version bump & tag (Dev Branch Only)
       - name: Version Bump & Tag (Dev Branch)
         if: env.IS_DEV == 'true'
@@ -93,7 +109,7 @@ jobs:
         if: env.IS_MAIN == 'true'
         run: |
           echo "Running semantic-release for main (creating final release)..."
-          # This command syncs the version from the latest dev tag and creates the final release
+          # CRITICAL FIX: Reverted to the simple command, relying on project configuration.
           python -m semantic_release publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
