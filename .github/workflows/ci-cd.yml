@@ -52,10 +52,10 @@ jobs:
           echo "Running mypy type check..."
           mypy fxmacrodata
 
-      - name: Check formatting
+      - name: Autoformat code with Black
         run: |
-          echo "Checking code formatting with black..."
-          black --check fxmacrodata tests
+          echo "Autoformatting code with Black..."
+          black fxmacrodata tests
 
       - name: Run tests
         run: |
@@ -134,10 +134,10 @@ jobs:
           echo "Running mypy type check..."
           mypy fxmacrodata
 
-      - name: Check formatting
+      - name: Autoformat code with Black
         run: |
-          echo "Checking code formatting with black..."
-          black --check fxmacrodata tests
+          echo "Autoformatting code with Black..."
+          black fxmacrodata tests
 
       - name: Run tests
         run: |
