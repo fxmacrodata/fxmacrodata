@@ -94,45 +94,28 @@ jobs:
           # GITHUB_TOKEN is required for pushing the initial tag
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 1. Automatic version bump & tag (Dev Branch Only)
-      - name: Version Bump & Tag (Dev Branch)
-        if: env.IS_DEV == 'true'
+      # 1. Automatic version bump & tag (both branches)
+      - name: Version Bump & Tag
         run: |
-          echo "Running semantic-release for dev (creating beta tag)..."
-          python -m semantic_release publish
-        env:
-          # GITHUB_TOKEN is required for pushing tags
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 2. Sync version and create Release (Main Branch Only)
-      - name: Sync Version and Create GitHub Release (Main Branch)
-        if: env.IS_MAIN == 'true'
-        run: |
-          echo "Running semantic-release for main (creating final release)..."
-          # Using the minimal command that works for your configuration
+          echo "Running semantic-release to bump version and tag..."
           python -m semantic_release publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 3. Build Package (for both)
+      # 2. Build Package (for both)
       - name: Build Source and Wheel Distributions
-        # Run if either dev or main triggered the workflow
-        if: env.IS_DEV == 'true' || env.IS_MAIN == 'true'
         run: python -m build
 
-      # 4. Publish to TestPyPI (Dev Branch Only)
-      - name: Publish to TestPyPI
-        if: env.IS_DEV == 'true'
-        env:
-          TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}
-          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-        run: twine upload dist/* --skip-existing
-
-      # 5. Publish to PyPI (Main Branch Only)
-      - name: Publish to PyPI
-        if: env.IS_MAIN == 'true'
+      # 3. Publish to PyPI (both branches, optional TestPyPI for dev)
+      - name: Publish to PyPI / TestPyPI
+        run: |
+          if [ "${{ github.ref_name }}" == "dev" ]; then
+              twine upload --repository-url https://test.pypi.org/legacy/ dist/* --skip-existing
+          else
+              twine upload dist/* --skip-existing
+          fi
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: twine upload dist/* --skip-existing
+          TEST_TWINE_USERNAME: ${{ secrets.TEST_PYPI_USERNAME }}
+          TEST_TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASSWORD }}

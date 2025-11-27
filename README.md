@@ -5,8 +5,7 @@
 ![License](https://img.shields.io/github/license/fxmacrodata/fxmacrodata?style=flat-square)
 ![Build](https://img.shields.io/github/actions/workflow/status/fxmacrodata/fxmacrodata/ci-cd.yml?style=flat-square&logo=github)
 
-The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators** and **forex price history** from  
-[FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
+The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators** and **forex price history** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
 It includes both synchronous and asynchronous clients, supports free USD endpoints, and offers a free Forex Price API for exchange rate data.
 
