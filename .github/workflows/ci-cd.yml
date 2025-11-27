@@ -99,7 +99,7 @@ jobs:
         if: env.IS_DEV == 'true'
         run: |
           echo "Running semantic-release for dev (creating beta tag)..."
-          python -m semantic_release publish
+          python -m semantic_release publish --force
         env:
           # GITHUB_TOKEN is required for pushing tags
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,7 +110,7 @@ jobs:
         run: |
           echo "Running semantic-release for main (creating final release)..."
           # Using the minimal command that works for your configuration
-          python -m semantic_release publish
+          python -m semantic_release publish --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
