@@ -1,6 +1,6 @@
 # FXMacroData SDK Documentation
 
-Welcome to the **FXMacroData SDK** documentation. This SDK allows you to fetch real-time macroeconomic and FX data from [FXMacroData.com](https://fxmacrodata.com/?utm_source=readthedocs&utm_medium=docs&utm_campaign=sdk_docs).
+Welcome to the **FXMacroData SDK** documentation. This SDK allows you to fetch real-time macroeconomic and FX data from [FXMacroData](https://fxmacrodata.com/?utm_source=readthedocs&utm_medium=docs&utm_campaign=sdk_docs).
 
 ## Installation
 
@@ -38,4 +38,4 @@ print(price)
 
 ## More Information
 
-For full documentation, tutorials, and examples, visit [FXMacroData.com](https://fxmacrodata.com/?utm_source=readthedocs&utm_medium=docs&utm_campaign=sdk_docs).
+For full documentation, tutorials, and examples, visit [FXMacroData](https://fxmacrodata.com/?utm_source=readthedocs&utm_medium=docs&utm_campaign=sdk_docs).
