@@ -141,3 +141,4 @@ MIT License © FXMacroData
 - API Docs: https://fxmacrodata.com/docs
 - GitHub: https://github.com/fxmacrodata/fxmacrodata
 - PyPI: https://pypi.org/project/fxmacrodata/
+- Readthedocs: https://fxmacrodata.readthedocs.io/en/latest/
