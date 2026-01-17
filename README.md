@@ -4,6 +4,7 @@
 ![Python Versions](https://img.shields.io/pypi/pyversions/fxmacrodata?style=flat-square)
 ![License](https://img.shields.io/github/license/fxmacrodata/fxmacrodata?style=flat-square)
 ![Build](https://img.shields.io/github/actions/workflow/status/fxmacrodata/fxmacrodata/ci-cd.yml?style=flat-square&logo=github)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18280968.svg)](https://doi.org/10.5281/zenodo.18280968)
 
 The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators** and **forex price history** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
