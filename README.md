@@ -142,3 +142,4 @@ MIT License © FXMacroData
 - GitHub: https://github.com/fxmacrodata/fxmacrodata
 - PyPI: https://pypi.org/project/fxmacrodata/
 - Readthedocs: https://fxmacrodata.readthedocs.io/en/latest/
+- Zenodo: https://zenodo.org/records/18280968
