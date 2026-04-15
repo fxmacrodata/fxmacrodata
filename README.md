@@ -170,25 +170,31 @@ Fetches commodity price time series.
 
 ## 💹 Supported Currencies & Indicators
 
+**18 currencies supported:** USD, EUR, GBP, JPY, AUD, CAD, CHF, NZD, HKD, SGD, NOK, PLN, SEK, DKK, BRL, CNY, KRW, MXN.
+
+The table below shows a sample of indicator coverage across four major currencies. Use `get_data_catalogue()` to discover the full list for any currency.
+
 | Category | Metric | USD | EUR | AUD | GBP |
 |---------|--------|-----|-----|-----|-----|
 | **Economy** | GDP Growth | ✓ | ✓ | ✓ | ✓ |
 |  | Inflation Rate | ✓ | ✓ | ✓ | ✓ |
 |  | Trade Balance | ✓ | ✓ | ✓ | ✓ |
 |  | Current Account Balance | ✓ | ✓ | ✓ | ✓ |
+|  | Retail Sales | ✓ | ✓ | ✓ | ✓ |
+|  | Industrial Production | ✓ | — | — | — |
 | **Labor Market** | Unemployment Rate | ✓ | ✓ | ✓ | ✓ |
-|  | Employment Level | ✓ | — | ✓ | ✓ |
-|  | Full-Time Employment | ✓ | — | ✓ | — |
-|  | Part-Time Employment | ✓ | — | ✓ | — |
-|  | Participation Rate | ✓ | — | ✓ | ✓ |
+|  | Employment Level | ✓ | ✓ | ✓ | ✓ |
+|  | Full-Time Employment | ✓ | ✓ | ✓ | — |
+|  | Part-Time Employment | ✓ | ✓ | ✓ | ✓ |
+|  | Participation Rate | ✓ | ✓ | ✓ | ✓ |
 |  | Non-Farm Payrolls | ✓ | — | — | — |
 | **Monetary Policy** | Policy Rate | ✓ | ✓ | ✓ | ✓ |
-|  | Interbank Rate | ✓ | ✓ | ✓ | ✓ |
-| **Government Bond Yields** | 2-Year Govt Bond | ✓ | ✓ | ✓ | — |
-|  | 3-Year Govt Bond | ✓ | ✓ | ✓ | — |
+|  | Risk-Free Rate | ✓ | ✓ | ✓ | ✓ |
+|  | Central Bank Assets | ✓ | — | ✓ | — |
+| **Government Bond Yields** | 2-Year Govt Bond | ✓ | ✓ | ✓ | ✓ |
 |  | 5-Year Govt Bond | ✓ | ✓ | ✓ | ✓ |
 |  | 10-Year Govt Bond | ✓ | ✓ | ✓ | ✓ |
-|  | Inflation-Linked Bond | ✓ | — | ✓ | ✓ |
+|  | Inflation-Linked Bond | ✓ | ✓ | ✓ | ✓ |
 
 ---
 
