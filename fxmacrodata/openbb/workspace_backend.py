@@ -307,8 +307,20 @@ def _apps_json() -> List[Dict[str, Any]]:
                     "id": "events",
                     "name": "Events",
                     "layout": [
-                        {"i": "fxmacrodata_release_calendar", "x": 0, "y": 0, "w": 24, "h": 12},
-                        {"i": "fxmacrodata_catalogue", "x": 24, "y": 0, "w": 16, "h": 12},
+                        {
+                            "i": "fxmacrodata_release_calendar",
+                            "x": 0,
+                            "y": 0,
+                            "w": 24,
+                            "h": 12,
+                        },
+                        {
+                            "i": "fxmacrodata_catalogue",
+                            "x": 24,
+                            "y": 0,
+                            "w": 16,
+                            "h": 12,
+                        },
                     ],
                 }
             },
@@ -330,9 +342,21 @@ def _apps_json() -> List[Dict[str, Any]]:
                     "name": "Research",
                     "layout": [
                         {"i": "fxmacrodata_forex", "x": 0, "y": 0, "w": 20, "h": 10},
-                        {"i": "fxmacrodata_macro_indicator", "x": 20, "y": 0, "w": 20, "h": 10},
+                        {
+                            "i": "fxmacrodata_macro_indicator",
+                            "x": 20,
+                            "y": 0,
+                            "w": 20,
+                            "h": 10,
+                        },
                         {"i": "fxmacrodata_cot", "x": 0, "y": 10, "w": 20, "h": 10},
-                        {"i": "fxmacrodata_commodity", "x": 20, "y": 10, "w": 20, "h": 10},
+                        {
+                            "i": "fxmacrodata_commodity",
+                            "x": 20,
+                            "y": 10,
+                            "w": 20,
+                            "h": 10,
+                        },
                     ],
                 }
             },

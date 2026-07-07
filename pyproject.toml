@@ -47,9 +47,10 @@ workspace = [
 dev = [
     "fastapi>=0.100",
     "httpx>=0.24",
-    "httpx2>=0.28",
+    "httpx2>=2.0",
     "openbb-core>=1.0",
     "pytest>=8.0",
+    "pytest-asyncio>=0.23",
     "pytest-mock>=3.10",
     "python-dotenv>=1.1",
     "python-semantic-release>=7.23",
@@ -78,3 +79,6 @@ include = ["fxmacrodata*"]
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.black]
+target-version = ["py39"]

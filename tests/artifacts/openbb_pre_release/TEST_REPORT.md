@@ -10,10 +10,16 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 
 | Area | Result | Evidence |
 |---|---:|---|
-| Full SDK test suite | Pass | `23 passed in 8.53s` |
+| Local SDK test suite | Pass | `27 passed, 1 skipped in 9.19s` |
+| Clean dev environment test suite | Pass | `31 passed, 1 warning in 9.80s` after `python -m pip install -e ".[dev]"` |
+| Lint | Pass | `python -m ruff check fxmacrodata tests` |
+| Formatting | Pass | `python -m black --check fxmacrodata tests` |
+| Type check | Pass | `python -m mypy fxmacrodata` |
 | Python compile check | Pass | `python -m compileall fxmacrodata` |
 | Package build | Pass | Built `fxmacrodata-1.2.0.tar.gz` and `fxmacrodata-1.2.0-py3-none-any.whl` |
 | Package metadata | Pass | `twine check dist\*` passed for wheel and sdist |
+| PR validation workflow | Pass | Added validation-only GitHub Actions workflow for PRs and `codex/**` pushes; no publish/release steps |
+| OpenBB entry-point smoke | Pass | Clean environment verified core/provider entry points, provider registration, Workspace widgets, and apps |
 | Fresh wheel install, Workspace extra | Pass | Installed `fxmacrodata-1.2.0-py3-none-any.whl[workspace]`; backend functions loaded |
 | Fresh wheel install, OpenBB extra | Pass | Installed `fxmacrodata-1.2.0-py3-none-any.whl[openbb]`; provider and router loaded |
 | OpenBB build | Pass | `openbb-build` discovered `fxmacrodata@1.2.0` |
@@ -28,7 +34,11 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 | SDK tests still assumed FX spot history was free, but live API returns `401 api_key_required`. | Updated sync and async clients so `get_fx_price` requires and sends `X-API-Key`; updated README and tests. |
 | Build produced another `1.1.0` package. | Bumped release candidate metadata to `1.2.0`. |
 | Setuptools warned about deprecated TOML table license syntax. | Changed `license = { text = "MIT" }` to `license = "MIT"`. |
-| Fresh clean Starlette/FastAPI test environment required `httpx2` for `TestClient`. | Added `httpx2>=0.28` to dev requirements. |
+| The previous `httpx2>=0.28` dev dependency was invalid for the current `httpx2` package line. | Corrected it to `httpx2>=2.0` and kept `httpx>=0.24` for OpenBB/test tooling compatibility. |
+| Async helper tests depended on a globally installed pytest plugin. | Added `pytest-asyncio>=0.23` to dev requirements and validated in a clean environment. |
+| Protected live tests could fail noisily in CI when no API key was configured. | Centralized the API-key skip in the keyed-client fixture and added mocked auth tests for deterministic coverage. |
+| The optional OpenBB provider fallback failed `mypy` when `openbb_core` was absent. | Reworked the provider import fallback to avoid assigning `None` to the imported provider class symbol. |
+| The repo had no safe PR validation workflow; existing CI/CD only runs on `main`/`dev` and includes release/publish steps. | Added `.github/workflows/pr-validation.yml` with read-only validation on PRs and `codex/**` pushes. |
 | Current `openbb-core` rejected router command signatures because postponed annotations hid actual parameter types. | Removed postponed annotations from `fxmacrodata.openbb.router`. |
 
 ## Screenshots
@@ -57,4 +67,5 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 
 - Optional: test inside a logged-in OpenBB Workspace UI session at `pro.openbb.co`; current screenshots validate the custom backend endpoints, not the hosted OpenBB UI.
 - Optional: decide whether to host the Workspace backend publicly over HTTPS or document local-only Workspace usage for the first release.
+- Required before merge/release: push the validation branch and confirm the new PR validation workflow passes on GitHub.
 - Required before PyPI publish: final approval to publish `fxmacrodata` 1.2.0.

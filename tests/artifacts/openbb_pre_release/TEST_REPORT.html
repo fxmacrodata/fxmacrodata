@@ -55,10 +55,16 @@
   <h2>Summary</h2>
   <table>
     <tr><th>Area</th><th>Result</th><th>Evidence</th></tr>
-    <tr><td>Full SDK test suite</td><td class="pass">Pass</td><td><code>23 passed in 8.53s</code></td></tr>
+    <tr><td>Local SDK test suite</td><td class="pass">Pass</td><td><code>27 passed, 1 skipped in 9.19s</code></td></tr>
+    <tr><td>Clean dev environment test suite</td><td class="pass">Pass</td><td><code>31 passed, 1 warning in 9.80s</code> after <code>python -m pip install -e ".[dev]"</code></td></tr>
+    <tr><td>Lint</td><td class="pass">Pass</td><td><code>python -m ruff check fxmacrodata tests</code></td></tr>
+    <tr><td>Formatting</td><td class="pass">Pass</td><td><code>python -m black --check fxmacrodata tests</code></td></tr>
+    <tr><td>Type check</td><td class="pass">Pass</td><td><code>python -m mypy fxmacrodata</code></td></tr>
     <tr><td>Python compile check</td><td class="pass">Pass</td><td><code>python -m compileall fxmacrodata</code></td></tr>
     <tr><td>Package build</td><td class="pass">Pass</td><td>Built wheel and sdist for <code>1.2.0</code></td></tr>
     <tr><td>Package metadata</td><td class="pass">Pass</td><td><code>twine check dist\*</code> passed</td></tr>
+    <tr><td>PR validation workflow</td><td class="pass">Pass</td><td>Added validation-only GitHub Actions workflow for PRs and <code>codex/**</code> pushes; no publish/release steps</td></tr>
+    <tr><td>OpenBB entry-point smoke</td><td class="pass">Pass</td><td>Clean environment verified core/provider entry points, provider registration, Workspace widgets, and apps</td></tr>
     <tr><td>Fresh wheel install, Workspace extra</td><td class="pass">Pass</td><td>Backend functions loaded from installed wheel</td></tr>
     <tr><td>Fresh wheel install, OpenBB extra</td><td class="pass">Pass</td><td>Provider, router, and entry points loaded from installed wheel</td></tr>
     <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.0</code></td></tr>
@@ -73,7 +79,11 @@
     <tr><td>SDK tests still assumed FX spot history was free, but live API returns <code>401 api_key_required</code>.</td><td>Updated sync and async clients so <code>get_fx_price</code> requires and sends <code>X-API-Key</code>; updated README and tests.</td></tr>
     <tr><td>Build produced another <code>1.1.0</code> package.</td><td>Bumped release candidate metadata to <code>1.2.0</code>.</td></tr>
     <tr><td>Setuptools warned about deprecated TOML table license syntax.</td><td>Changed license metadata to <code>license = "MIT"</code>.</td></tr>
-    <tr><td>Fresh clean Starlette/FastAPI test environment required <code>httpx2</code>.</td><td>Added <code>httpx2&gt;=0.28</code> to dev requirements.</td></tr>
+    <tr><td>The previous <code>httpx2&gt;=0.28</code> dev dependency was invalid for the current <code>httpx2</code> package line.</td><td>Corrected it to <code>httpx2&gt;=2.0</code> and kept <code>httpx&gt;=0.24</code> for OpenBB/test tooling compatibility.</td></tr>
+    <tr><td>Async helper tests depended on a globally installed pytest plugin.</td><td>Added <code>pytest-asyncio&gt;=0.23</code> to dev requirements and validated in a clean environment.</td></tr>
+    <tr><td>Protected live tests could fail noisily in CI when no API key was configured.</td><td>Centralized the API-key skip in the keyed-client fixture and added mocked auth tests for deterministic coverage.</td></tr>
+    <tr><td>The optional OpenBB provider fallback failed <code>mypy</code> when <code>openbb_core</code> was absent.</td><td>Reworked the provider import fallback to avoid assigning <code>None</code> to the imported provider class symbol.</td></tr>
+    <tr><td>The repo had no safe PR validation workflow; existing CI/CD only runs on <code>main</code>/<code>dev</code> and includes release/publish steps.</td><td>Added <code>.github/workflows/pr-validation.yml</code> with read-only validation on PRs and <code>codex/**</code> pushes.</td></tr>
     <tr><td>Current <code>openbb-core</code> rejected router command signatures because postponed annotations hid actual parameter types.</td><td>Removed postponed annotations from <code>fxmacrodata.openbb.router</code>.</td></tr>
   </table>
 
@@ -93,6 +103,7 @@
   <ul>
     <li>Optional: test inside a logged-in OpenBB Workspace UI session at <code>pro.openbb.co</code>; current screenshots validate the custom backend endpoints, not the hosted OpenBB UI.</li>
     <li>Optional: decide whether to host the Workspace backend publicly over HTTPS or document local-only Workspace usage for the first release.</li>
+    <li>Required before merge/release: push the validation branch and confirm the new PR validation workflow passes on GitHub.</li>
     <li>Required before PyPI publish: final approval to publish <code>fxmacrodata</code> 1.2.0.</li>
   </ul>
 </body>
