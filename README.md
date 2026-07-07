@@ -127,6 +127,60 @@ asyncio.run(main())
 
 ---
 
+## OpenBB Integration
+
+Install the OpenBB extras:
+
+```bash
+pip install "fxmacrodata[openbb]"
+openbb-build
+```
+
+Then use FXMacroData from the OpenBB Python interface:
+
+```python
+from openbb import obb
+
+obb.user.credentials.fxmacrodata_api_key = "YOUR_API_KEY"
+
+catalogue = obb.fxmacrodata.data_catalogue(
+    currency="USD",
+    provider="fxmacrodata",
+).to_df()
+
+inflation = obb.fxmacrodata.macro_indicators(
+    currency="USD",
+    indicator="inflation",
+    start_date="2020-01-01",
+    provider="fxmacrodata",
+).to_df()
+
+eurusd = obb.fxmacrodata.fx_historical(
+    base="EUR",
+    quote="USD",
+    start_date="2024-01-01",
+    provider="fxmacrodata",
+).to_df()
+```
+
+The package also includes an OpenBB Workspace custom backend:
+
+```bash
+pip install "fxmacrodata[workspace]"
+fxmacrodata-openbb-backend
+```
+
+Default backend URL:
+
+```text
+http://127.0.0.1:7779
+```
+
+Workspace exposes `/widgets.json`, `/apps.json`, `/catalogue`,
+`/release_calendar`, `/macro_indicator`, `/forex`, `/cot`, and `/commodity`.
+
+---
+
 ## 📘 API Overview
 
 ### `get_indicator(currency, indicator, start_date=None, end_date=None)`

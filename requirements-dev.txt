@@ -1,6 +1,9 @@
 pytest>=8.0
 pytest-mock>=3.10
 python-dotenv>=1.1
+fastapi>=0.100
+httpx>=0.24
+openbb-core>=1.0
 python-semantic-release>=7.23
 twine>=4.0
 build>=1.0
@@ -8,3 +11,4 @@ ruff>=0.0
 mypy>=1.5
 black>=24.0
 types-requests>=2.28
+uvicorn>=0.23

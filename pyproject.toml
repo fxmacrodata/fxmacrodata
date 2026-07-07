@@ -37,7 +37,17 @@ Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
 [project.optional-dependencies]
+openbb = [
+    "openbb-core>=1.0",
+]
+workspace = [
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+]
 dev = [
+    "fastapi>=0.100",
+    "httpx>=0.24",
+    "openbb-core>=1.0",
     "pytest>=8.0",
     "pytest-mock>=3.10",
     "python-dotenv>=1.1",
@@ -49,7 +59,17 @@ dev = [
     "black>=24.0",
     # type stubs for static type checking
     "types-requests>=2.28",
+    "uvicorn>=0.23",
 ]
+
+[project.scripts]
+fxmacrodata-openbb-backend = "fxmacrodata.openbb.workspace_backend:main"
+
+[project.entry-points."openbb_core_extension"]
+fxmacrodata = "fxmacrodata.openbb.router:router"
+
+[project.entry-points."openbb_provider_extension"]
+fxmacrodata = "fxmacrodata.openbb:fxmacrodata_provider"
 
 [tool.setuptools.packages.find]
 where = ["."]
