@@ -38,7 +38,23 @@ Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
 [project.optional-dependencies]
 openbb = [
-    "openbb-core>=1.0",
+    "openbb>=4.7.2",
+    "openbb-core>=1.6.10",
+]
+openbb-api = [
+    "openbb>=4.7.2",
+    "openbb-core>=1.6.10",
+    "openbb-platform-api>=1.3.6",
+]
+openbb-cli = [
+    "openbb>=4.7.2",
+    "openbb-core>=1.6.10",
+    "openbb-cli>=1.0",
+]
+mcp = [
+    "openbb>=4.7.2",
+    "openbb-core>=1.6.10",
+    "openbb-mcp-server>=1.4.1",
 ]
 workspace = [
     "fastapi>=0.100",
@@ -48,7 +64,7 @@ dev = [
     "fastapi>=0.100",
     "httpx>=0.24",
     "httpx2>=2.0",
-    "openbb-core>=1.0",
+    "openbb-core>=1.6.10",
     "openbb-platform-api>=1.3.6",
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
@@ -67,6 +83,8 @@ dev = [
 
 [project.scripts]
 fxmacrodata-openbb-backend = "fxmacrodata.openbb.workspace_backend:main"
+fxmacrodata-openbb-api = "fxmacrodata.openbb.launcher:platform_api"
+fxmacrodata-openbb-mcp = "fxmacrodata.openbb.launcher:mcp"
 
 [project.entry-points."openbb_core_extension"]
 fxmacrodata = "fxmacrodata.openbb.router:router"

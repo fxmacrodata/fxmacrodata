@@ -74,3 +74,14 @@ jobs:
           assert "fxmacrodata_catalogue" in _widgets_json()
           assert _apps_json()
           PY
+
+      - name: Smoke-test OpenBB Workspace/MCP metadata
+        run: |
+          python - <<'PY'
+          from fxmacrodata.openbb.metadata import openapi_extra, workspace_widgets_json
+
+          extra = openapi_extra("data_catalogue")
+          assert extra["widget_config"]["name"] == "FXMacroData Data Catalogue"
+          assert extra["mcp_config"]["mcp_type"] == "tool"
+          assert "fxmacrodata_release_calendar" in workspace_widgets_json()
+          PY
