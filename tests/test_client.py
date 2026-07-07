@@ -11,6 +11,8 @@ API_KEY = os.getenv("FXMACRODATA_API_KEY")
 
 @pytest.fixture
 def client_with_key():
+    if not API_KEY:
+        pytest.skip("FXMACRODATA_API_KEY not set")
     return Client(api_key=API_KEY)
 
 
@@ -22,6 +24,7 @@ def client_without_key():
 # ------------------------------------------------------------------
 # get_indicator
 # ------------------------------------------------------------------
+
 
 def test_usd_endpoint_no_key(client_without_key):
     """USD indicator endpoint should work without API key."""
@@ -52,19 +55,18 @@ def test_non_usd_endpoint_with_key(client_with_key):
 # get_fx_price
 # ------------------------------------------------------------------
 
-def test_free_fx_price_endpoint():
-    """Free forex price endpoint should return data without API key."""
-    client = Client()
-    result = client.get_fx_price("usd", "gbp", start_date="2025-01-01")
+
+def test_fx_price_endpoint_with_key(client_with_key):
+    """Forex price endpoint should return data with an API key."""
+    result = client_with_key.get_fx_price("usd", "gbp", start_date="2025-01-01")
     assert result["base"] == "USD"
     assert result["quote"] == "GBP"
     assert isinstance(result["data"], list)
 
 
-def test_fx_price_with_indicators():
+def test_fx_price_with_indicators(client_with_key):
     """Forex endpoint should accept technical indicator parameter."""
-    client = Client()
-    result = client.get_fx_price(
+    result = client_with_key.get_fx_price(
         "eur", "usd", start_date="2026-01-01", indicators="sma_20,rsi_14"
     )
     assert result["base"] == "EUR"
@@ -72,9 +74,17 @@ def test_fx_price_with_indicators():
     assert "indicators" in result
 
 
+def test_fx_price_no_key_raises(client_without_key):
+    """Forex price endpoint should require an API key."""
+    with pytest.raises(FXMacroDataError) as exc:
+        client_without_key.get_fx_price("eur", "usd", start_date="2026-01-01")
+    assert "API key required" in str(exc.value)
+
+
 # ------------------------------------------------------------------
 # get_calendar
 # ------------------------------------------------------------------
+
 
 def test_calendar_usd_no_key(client_without_key):
     """Calendar should return release dates for USD without API key."""
@@ -93,6 +103,7 @@ def test_calendar_with_indicator_filter(client_without_key):
 # ------------------------------------------------------------------
 # get_data_catalogue
 # ------------------------------------------------------------------
+
 
 def test_data_catalogue_usd_no_key(client_without_key):
     """USD data catalogue should work without API key."""
@@ -119,6 +130,7 @@ def test_data_catalogue_non_usd_with_key(client_with_key):
 # get_cot
 # ------------------------------------------------------------------
 
+
 def test_cot_usd_no_key(client_without_key):
     """USD COT data should work without API key."""
     result = client_without_key.get_cot("usd")
@@ -143,6 +155,7 @@ def test_cot_non_usd_with_key(client_with_key):
 # ------------------------------------------------------------------
 # get_commodities
 # ------------------------------------------------------------------
+
 
 def test_commodities_gold(client_with_key):
     """Commodities gold endpoint should return price data."""

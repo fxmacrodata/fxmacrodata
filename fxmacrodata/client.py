@@ -50,7 +50,7 @@ class Client:
         return self._request(url, params, headers)
 
     # ------------------------------------------------------------------
-    # FX spot rates (free)
+    # FX spot rates
     # ------------------------------------------------------------------
     def get_fx_price(
         self,
@@ -70,7 +70,10 @@ class Client:
             params["end_date"] = end_date
         if indicators:
             params["indicators"] = indicators
-        return self._request(url, params, {})
+        if not self.api_key:
+            raise FXMacroDataError("API key required for forex endpoints.")
+        headers = {"X-API-Key": self.api_key}
+        return self._request(url, params, headers)
 
     # ------------------------------------------------------------------
     # Release calendar

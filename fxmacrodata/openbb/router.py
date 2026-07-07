@@ -1,7 +1,5 @@
 """OpenBB router extension exposing FXMacroData commands."""
 
-from __future__ import annotations
-
 from openbb_core.app.model.command_context import CommandContext
 from openbb_core.app.model.obbject import OBBject
 from openbb_core.app.provider_interface import (
@@ -11,6 +9,8 @@ from openbb_core.app.provider_interface import (
 )
 from openbb_core.app.query import Query
 from openbb_core.app.router import Router
+
+from fxmacrodata.openbb.metadata import openapi_extra
 
 router = Router(
     prefix="",
@@ -31,7 +31,10 @@ async def _query_provider_interface(
     return await OBBject.from_query(Query(**locals()))
 
 
-@router.command(model="FXMacroDataDataCatalogue")
+@router.command(
+    model="FXMacroDataDataCatalogue",
+    openapi_extra=openapi_extra("data_catalogue"),
+)
 async def data_catalogue(
     cc: CommandContext,
     provider_choices: ProviderChoices,
@@ -42,7 +45,10 @@ async def data_catalogue(
     return await _query_provider_interface(**locals())
 
 
-@router.command(model="FXMacroDataMacroIndicators")
+@router.command(
+    model="FXMacroDataMacroIndicators",
+    openapi_extra=openapi_extra("macro_indicators"),
+)
 async def macro_indicators(
     cc: CommandContext,
     provider_choices: ProviderChoices,
@@ -53,7 +59,10 @@ async def macro_indicators(
     return await _query_provider_interface(**locals())
 
 
-@router.command(model="FXMacroDataFxHistorical")
+@router.command(
+    model="FXMacroDataFxHistorical",
+    openapi_extra=openapi_extra("fx_historical"),
+)
 async def fx_historical(
     cc: CommandContext,
     provider_choices: ProviderChoices,
@@ -64,7 +73,7 @@ async def fx_historical(
     return await _query_provider_interface(**locals())
 
 
-@router.command(model="FXMacroDataCot")
+@router.command(model="FXMacroDataCot", openapi_extra=openapi_extra("cot"))
 async def cot(
     cc: CommandContext,
     provider_choices: ProviderChoices,
@@ -75,7 +84,7 @@ async def cot(
     return await _query_provider_interface(**locals())
 
 
-@router.command(model="FXMacroDataCommodity")
+@router.command(model="FXMacroDataCommodity", openapi_extra=openapi_extra("commodity"))
 async def commodity(
     cc: CommandContext,
     provider_choices: ProviderChoices,
@@ -86,7 +95,10 @@ async def commodity(
     return await _query_provider_interface(**locals())
 
 
-@router.command(model="FXMacroDataReleaseCalendar")
+@router.command(
+    model="FXMacroDataReleaseCalendar",
+    openapi_extra=openapi_extra("release_calendar"),
+)
 async def release_calendar(
     cc: CommandContext,
     provider_choices: ProviderChoices,

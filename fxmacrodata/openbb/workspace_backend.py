@@ -8,6 +8,7 @@ Run locally:
 from __future__ import annotations
 
 from datetime import date
+import os
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Request
@@ -15,16 +16,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from requests import HTTPError
 
+from fxmacrodata.openbb.metadata import workspace_apps_json, workspace_widgets_json
 from fxmacrodata.openbb.utils.catalogue import flatten_catalogue_payload
 from fxmacrodata.openbb.utils.helpers import get_json
 
 APP_TITLE = "FXMacroData OpenBB Backend"
 APP_VERSION = "0.1.0"
+ENABLE_DOCS = os.environ.get("FXMACRODATA_OPENBB_ENABLE_DOCS", "").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 
 app = FastAPI(
     title=APP_TITLE,
     description="OpenBB Workspace widgets and apps backed by FXMacroData.",
     version=APP_VERSION,
+    docs_url="/docs" if ENABLE_DOCS else None,
+    redoc_url="/redoc" if ENABLE_DOCS else None,
+    openapi_url="/openapi.json" if ENABLE_DOCS else None,
 )
 
 app.add_middleware(
@@ -84,261 +94,11 @@ def _rows(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def _widgets_json() -> Dict[str, Dict[str, Any]]:
-    shared_category = "FXMacroData"
-    return {
-        "fxmacrodata_catalogue": {
-            "name": "FXMacroData Data Catalogue",
-            "description": (
-                "Discover available macro indicators, source metadata, and "
-                "freshness coverage for a currency."
-            ),
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "catalogue",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "currency",
-                    "value": "USD",
-                    "label": "Currency",
-                    "type": "text",
-                    "description": "Three-letter currency code, e.g. USD, EUR, JPY.",
-                },
-                {
-                    "paramName": "indicator",
-                    "value": "",
-                    "label": "Indicator",
-                    "type": "text",
-                    "description": "Optional indicator slug to filter the catalogue.",
-                },
-            ],
-        },
-        "fxmacrodata_release_calendar": {
-            "name": "FXMacroData Release Calendar",
-            "description": (
-                "Upcoming official macro release schedule with UTC timestamps, "
-                "source links, and confirmation flags."
-            ),
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "release_calendar",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "currency",
-                    "value": "USD",
-                    "label": "Currency",
-                    "type": "text",
-                    "description": "Calendar currency, e.g. USD, EUR, AUD.",
-                },
-                {
-                    "paramName": "indicator",
-                    "value": "",
-                    "label": "Indicator",
-                    "type": "text",
-                    "description": "Optional release indicator filter.",
-                },
-            ],
-        },
-        "fxmacrodata_macro_indicator": {
-            "name": "FXMacroData Macro Indicator History",
-            "description": (
-                "Official-source macro indicator history with announcement "
-                "timestamp fields where available."
-            ),
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "macro_indicator",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "currency",
-                    "value": "USD",
-                    "label": "Currency",
-                    "type": "text",
-                    "description": "Three-letter currency code.",
-                },
-                {
-                    "paramName": "indicator",
-                    "value": "inflation",
-                    "label": "Indicator",
-                    "type": "text",
-                    "description": "Indicator slug from the data catalogue.",
-                },
-                {
-                    "paramName": "start_date",
-                    "value": "",
-                    "label": "Start Date",
-                    "type": "date",
-                    "description": "Optional inclusive start date.",
-                },
-                {
-                    "paramName": "end_date",
-                    "value": "",
-                    "label": "End Date",
-                    "type": "date",
-                    "description": "Optional inclusive end date.",
-                },
-            ],
-        },
-        "fxmacrodata_forex": {
-            "name": "FXMacroData FX Spot History",
-            "description": "FX spot-rate history for supported currency pairs.",
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "forex",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "base",
-                    "value": "EUR",
-                    "label": "Base",
-                    "type": "text",
-                    "description": "Base currency.",
-                },
-                {
-                    "paramName": "quote",
-                    "value": "USD",
-                    "label": "Quote",
-                    "type": "text",
-                    "description": "Quote currency.",
-                },
-                {
-                    "paramName": "start_date",
-                    "value": "",
-                    "label": "Start Date",
-                    "type": "date",
-                    "description": "Optional inclusive start date.",
-                },
-                {
-                    "paramName": "end_date",
-                    "value": "",
-                    "label": "End Date",
-                    "type": "date",
-                    "description": "Optional inclusive end date.",
-                },
-            ],
-        },
-        "fxmacrodata_cot": {
-            "name": "FXMacroData COT Positioning",
-            "description": "CFTC Commitment of Traders FX futures positioning.",
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "cot",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "currency",
-                    "value": "EUR",
-                    "label": "Currency",
-                    "type": "text",
-                    "description": "FX futures contract currency.",
-                },
-                {
-                    "paramName": "start_date",
-                    "value": "",
-                    "label": "Start Date",
-                    "type": "date",
-                    "description": "Optional inclusive start date.",
-                },
-                {
-                    "paramName": "end_date",
-                    "value": "",
-                    "label": "End Date",
-                    "type": "date",
-                    "description": "Optional inclusive end date.",
-                },
-            ],
-        },
-        "fxmacrodata_commodity": {
-            "name": "FXMacroData Commodity Prices",
-            "description": "Commodity and energy price history.",
-            "category": shared_category,
-            "type": "table",
-            "endpoint": "commodity",
-            "gridData": {"w": 20, "h": 12},
-            "source": "FXMacroData",
-            "params": [
-                {
-                    "paramName": "indicator",
-                    "value": "gold",
-                    "label": "Commodity",
-                    "type": "text",
-                    "description": "Commodity slug such as gold or oil_wti.",
-                },
-                {
-                    "paramName": "start_date",
-                    "value": "",
-                    "label": "Start Date",
-                    "type": "date",
-                    "description": "Optional inclusive start date.",
-                },
-                {
-                    "paramName": "end_date",
-                    "value": "",
-                    "label": "End Date",
-                    "type": "date",
-                    "description": "Optional inclusive end date.",
-                },
-            ],
-        },
-    }
+    return workspace_widgets_json()
 
 
 def _apps_json() -> List[Dict[str, Any]]:
-    return [
-        {
-            "name": "FXMacroData Macro Event Radar",
-            "img": "",
-            "img_dark": "",
-            "img_light": "",
-            "description": (
-                "Track upcoming official macro releases and inspect available "
-                "currency-level macro data coverage."
-            ),
-            "allowCustomization": True,
-            "tabs": {
-                "events": {
-                    "id": "events",
-                    "name": "Events",
-                    "layout": [
-                        {"i": "fxmacrodata_release_calendar", "x": 0, "y": 0, "w": 24, "h": 12},
-                        {"i": "fxmacrodata_catalogue", "x": 24, "y": 0, "w": 16, "h": 12},
-                    ],
-                }
-            },
-            "groups": [],
-        },
-        {
-            "name": "FXMacroData FX Research Board",
-            "img": "",
-            "img_dark": "",
-            "img_light": "",
-            "description": (
-                "Combine FX spot history, macro indicator rows, COT positioning, "
-                "and commodity context in one Workspace app."
-            ),
-            "allowCustomization": True,
-            "tabs": {
-                "research": {
-                    "id": "research",
-                    "name": "Research",
-                    "layout": [
-                        {"i": "fxmacrodata_forex", "x": 0, "y": 0, "w": 20, "h": 10},
-                        {"i": "fxmacrodata_macro_indicator", "x": 20, "y": 0, "w": 20, "h": 10},
-                        {"i": "fxmacrodata_cot", "x": 0, "y": 10, "w": 20, "h": 10},
-                        {"i": "fxmacrodata_commodity", "x": 20, "y": 10, "w": 20, "h": 10},
-                    ],
-                }
-            },
-            "groups": [],
-        },
-    ]
+    return workspace_apps_json()
 
 
 @app.get("/")

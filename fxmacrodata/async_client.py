@@ -60,7 +60,7 @@ class AsyncClient:
         return await self._request(url, params, headers)
 
     # ------------------------------------------------------------------
-    # FX spot rates (free)
+    # FX spot rates
     # ------------------------------------------------------------------
     async def get_fx_price(
         self,
@@ -80,7 +80,10 @@ class AsyncClient:
             params["end_date"] = end_date
         if indicators:
             params["indicators"] = indicators
-        return await self._request(url, params, {})
+        if not self.api_key:
+            raise FXMacroDataError("API key required for forex endpoints.")
+        headers = {"X-API-Key": self.api_key}
+        return await self._request(url, params, headers)
 
     # ------------------------------------------------------------------
     # Release calendar

@@ -28,16 +28,20 @@ Fetcher classes can also be imported directly from
     )
 """
 
+from typing import Any
+
 __version__ = "0.1.0"
 
+_OpenBBProvider: Any = None
 try:
-    from openbb_core.provider.abstract.provider import Provider
+    from openbb_core.provider.abstract.provider import Provider as _ImportedProvider
 except ModuleNotFoundError as exc:
     if exc.name != "openbb_core":
         raise
-    Provider = None  # type: ignore[assignment]
+else:
+    _OpenBBProvider = _ImportedProvider
 
-if Provider is None:
+if _OpenBBProvider is None:
     fxmacrodata_provider = None
     __all__ = ["fxmacrodata_provider"]
 else:
@@ -62,7 +66,7 @@ else:
         "FXMacroDataReleaseCalendarFetcher",
     ]
 
-    fxmacrodata_provider = Provider(
+    fxmacrodata_provider = _OpenBBProvider(
         name="fxmacrodata",
         website="https://fxmacrodata.com",
         description=(
