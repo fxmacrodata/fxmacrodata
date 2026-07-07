@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fxmacrodata"
-version = "1.1.0"
+version = "1.2.0"
 description = "Python client for the FXMacroData API, providing forex macroeconomic data for traders, quants, and analysts."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
 
 authors = [
     { name = "FXMacroData", email = "info@fxmacrodata.com" }
@@ -47,6 +47,7 @@ workspace = [
 dev = [
     "fastapi>=0.100",
     "httpx>=0.24",
+    "httpx2>=0.28",
     "openbb-core>=1.0",
     "pytest>=8.0",
     "pytest-mock>=3.10",

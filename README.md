@@ -7,7 +7,7 @@
 
 The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators**, **forex prices**, **release calendars**, **COT positioning**, and **commodity prices** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
-It includes both synchronous and asynchronous clients, supports free USD endpoints, and offers a free Forex Price API for exchange rate data.
+It includes both synchronous and asynchronous clients and supports free USD macro endpoints.
 
 ---
 
@@ -21,8 +21,8 @@ It includes both synchronous and asynchronous clients, supports free USD endpoin
   - **COT data** — CFTC Commitment of Traders positioning
   - **Commodity prices** — gold, silver, platinum
 - Free access to **USD** macro data.
-- Free **Forex Price API** (`get_fx_price`).
-- API key required only for **non-USD** indicators.
+- FX spot-rate history through `get_fx_price`.
+- API key required for protected datasets, including non-USD indicators, FX spot-rate history, COT, and commodities.
 - Full support for:
   - **Synchronous client**
   - **Asynchronous client**
@@ -63,7 +63,7 @@ data = client.get_indicator(
 )
 print(data)
 
-# Free Forex Price Endpoint
+# Forex price endpoint
 fx = client.get_fx_price("usd", "gbp", start_date="2025-01-01")
 print(fx)
 
@@ -102,7 +102,7 @@ async def main():
         data = await client.get_indicator("eur", "inflation")
         print(data)
 
-        # Free Forex Price Endpoint
+        # Forex price endpoint
         fx = await client.get_fx_price("usd", "jpy")
         print(fx)
 
@@ -191,10 +191,10 @@ Fetches macroeconomic indicator time series data.
 - **API key required for non-USD.**
 
 ### `get_fx_price(base, quote, start_date=None, end_date=None, indicators=None)`
-Fetches daily FX spot rates (ECB reference rates) between two currencies.
+Fetches daily FX spot rates between two currencies.
 
 - `indicators`: Optional comma-separated technical indicators — `"sma_20"`, `"sma_50"`, `"sma_200"`, `"rsi_14"`, `"macd"`, `"ema_12"`, `"ema_26"`, `"bollinger_bands"`, or `"all"`.
-- **No API key needed.**
+- **API key required.**
 
 ### `get_calendar(currency, indicator=None)`
 Fetches upcoming economic data release dates for a currency.

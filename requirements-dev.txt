@@ -3,6 +3,7 @@ pytest-mock>=3.10
 python-dotenv>=1.1
 fastapi>=0.100
 httpx>=0.24
+httpx2>=0.28
 openbb-core>=1.0
 python-semantic-release>=7.23
 twine>=4.0

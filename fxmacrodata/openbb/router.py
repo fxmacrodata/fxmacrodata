@@ -1,7 +1,5 @@
 """OpenBB router extension exposing FXMacroData commands."""
 
-from __future__ import annotations
-
 from openbb_core.app.model.command_context import CommandContext
 from openbb_core.app.model.obbject import OBBject
 from openbb_core.app.provider_interface import (

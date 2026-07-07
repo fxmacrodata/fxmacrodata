@@ -52,24 +52,33 @@ def test_non_usd_endpoint_with_key(client_with_key):
 # get_fx_price
 # ------------------------------------------------------------------
 
-def test_free_fx_price_endpoint():
-    """Free forex price endpoint should return data without API key."""
-    client = Client()
-    result = client.get_fx_price("usd", "gbp", start_date="2025-01-01")
+def test_fx_price_endpoint_with_key(client_with_key):
+    """Forex price endpoint should return data with an API key."""
+    if not API_KEY:
+        pytest.skip("FXMACRODATA_API_KEY not set")
+    result = client_with_key.get_fx_price("usd", "gbp", start_date="2025-01-01")
     assert result["base"] == "USD"
     assert result["quote"] == "GBP"
     assert isinstance(result["data"], list)
 
 
-def test_fx_price_with_indicators():
+def test_fx_price_with_indicators(client_with_key):
     """Forex endpoint should accept technical indicator parameter."""
-    client = Client()
-    result = client.get_fx_price(
+    if not API_KEY:
+        pytest.skip("FXMACRODATA_API_KEY not set")
+    result = client_with_key.get_fx_price(
         "eur", "usd", start_date="2026-01-01", indicators="sma_20,rsi_14"
     )
     assert result["base"] == "EUR"
     assert result["quote"] == "USD"
     assert "indicators" in result
+
+
+def test_fx_price_no_key_raises(client_without_key):
+    """Forex price endpoint should require an API key."""
+    with pytest.raises(FXMacroDataError) as exc:
+        client_without_key.get_fx_price("eur", "usd", start_date="2026-01-01")
+    assert "API key required" in str(exc.value)
 
 
 # ------------------------------------------------------------------
