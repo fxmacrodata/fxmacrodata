@@ -8,8 +8,18 @@ pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
 from fastapi.testclient import TestClient
+from fastapi import FastAPI
 
 from fxmacrodata.openbb import workspace_backend as backend
+
+
+def test_workspace_backend_does_not_expose_docs_by_default():
+    """The public Workspace backend should not expose exploratory API docs."""
+    client = TestClient(backend.app)
+
+    assert client.get("/docs").status_code == 404
+    assert client.get("/redoc").status_code == 404
+    assert client.get("/openapi.json").status_code == 404
 
 
 def test_workspace_metadata_endpoints():
@@ -149,3 +159,19 @@ def test_release_calendar_endpoint_proxies_data_rows(monkeypatch: pytest.MonkeyP
             "auth_mode": "header",
         }
     ]
+
+
+def test_openbb_platform_api_can_import_workspace_backend():
+    """OpenBB's API launcher should be able to load the Workspace backend."""
+    api_utils = pytest.importorskip("openbb_platform_api.utils.api")
+
+    imported_app = api_utils.import_app(
+        "fxmacrodata/openbb/workspace_backend.py",
+        "app",
+        False,
+    )
+
+    route_paths = {route.path for route in imported_app.routes}
+
+    assert isinstance(imported_app, FastAPI)
+    assert {"/widgets.json", "/apps.json", "/catalogue"}.issubset(route_paths)

@@ -56,7 +56,7 @@
   <table>
     <tr><th>Area</th><th>Result</th><th>Evidence</th></tr>
     <tr><td>Local SDK test suite</td><td class="pass">Pass</td><td><code>27 passed, 1 skipped in 9.19s</code></td></tr>
-    <tr><td>Clean dev environment test suite</td><td class="pass">Pass</td><td><code>31 passed, 1 warning in 9.80s</code> after <code>python -m pip install -e ".[dev]"</code></td></tr>
+    <tr><td>Clean dev environment test suite</td><td class="pass">Pass</td><td><code>33 passed, 3 warnings in 9.45s</code> after <code>python -m pip install -e ".[dev]"</code></td></tr>
     <tr><td>Lint</td><td class="pass">Pass</td><td><code>python -m ruff check fxmacrodata tests</code></td></tr>
     <tr><td>Formatting</td><td class="pass">Pass</td><td><code>python -m black --check fxmacrodata tests</code></td></tr>
     <tr><td>Type check</td><td class="pass">Pass</td><td><code>python -m mypy fxmacrodata</code></td></tr>
@@ -70,7 +70,7 @@
     <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.0</code></td></tr>
     <tr><td>OpenBB Python command, public data</td><td class="pass">Pass</td><td>USD catalogue returned shape <code>(46, 17)</code> and includes <code>inflation</code></td></tr>
     <tr><td>OpenBB Python commands, protected data</td><td class="pass">Pass</td><td>AUD GDP, EUR/USD FX, EUR COT, and gold commodity returned rows</td></tr>
-    <tr><td>Workspace backend endpoints</td><td class="pass">Pass</td><td>Docs, widgets, apps, catalogue, and release calendar endpoints returned <code>200 OK</code></td></tr>
+    <tr><td>Workspace backend endpoints</td><td class="pass">Pass</td><td>OpenBB Platform API launcher served <code>/health</code>, <code>/widgets.json</code>, <code>/apps.json</code>, and <code>/catalogue?currency=USD</code> as <code>200 OK</code>; <code>/docs</code> and <code>/openapi.json</code> returned <code>404</code> by default</td></tr>
   </table>
 
   <h2>Issues Found And Fixed</h2>
@@ -84,12 +84,12 @@
     <tr><td>Protected live tests could fail noisily in CI when no API key was configured.</td><td>Centralized the API-key skip in the keyed-client fixture and added mocked auth tests for deterministic coverage.</td></tr>
     <tr><td>The optional OpenBB provider fallback failed <code>mypy</code> when <code>openbb_core</code> was absent.</td><td>Reworked the provider import fallback to avoid assigning <code>None</code> to the imported provider class symbol.</td></tr>
     <tr><td>The repo had no safe PR validation workflow; existing CI/CD only runs on <code>main</code>/<code>dev</code> and includes release/publish steps.</td><td>Added <code>.github/workflows/pr-validation.yml</code> with read-only validation on PRs and <code>codex/**</code> pushes.</td></tr>
+    <tr><td>The Workspace backend exposed FastAPI Swagger/OpenAPI docs by default.</td><td>Disabled <code>/docs</code>, <code>/redoc</code>, and <code>/openapi.json</code> unless <code>FXMACRODATA_OPENBB_ENABLE_DOCS=1</code> is set for local debugging.</td></tr>
+    <tr><td>The Workspace backend had not been checked through OpenBB's own API launcher.</td><td>Added dev dependency <code>openbb-platform-api&gt;=1.3.6</code>, a launcher import test, and a local <code>openbb-api --app fxmacrodata/openbb/workspace_backend.py --name app</code> smoke run.</td></tr>
     <tr><td>Current <code>openbb-core</code> rejected router command signatures because postponed annotations hid actual parameter types.</td><td>Removed postponed annotations from <code>fxmacrodata.openbb.router</code>.</td></tr>
   </table>
 
   <h2>Screenshots</h2>
-  <h3>FastAPI Docs</h3>
-  <img src="openbb_backend_docs.png" alt="OpenBB backend docs">
   <h3>Workspace Widgets JSON</h3>
   <img src="openbb_widgets_json.png" alt="OpenBB widgets JSON">
   <h3>Workspace Apps JSON</h3>

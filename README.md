@@ -129,7 +129,12 @@ asyncio.run(main())
 
 ## OpenBB Integration
 
-Install the OpenBB extras:
+FXMacroData supports two OpenBB integration paths:
+
+- OpenBB Python: installable provider/router extension for `obb.fxmacrodata.*`.
+- OpenBB Workspace: custom backend serving `widgets.json`, `apps.json`, and data endpoints.
+
+Install the OpenBB Python extra:
 
 ```bash
 pip install "fxmacrodata[openbb]"
@@ -163,7 +168,7 @@ eurusd = obb.fxmacrodata.fx_historical(
 ).to_df()
 ```
 
-The package also includes an OpenBB Workspace custom backend:
+Run the OpenBB Workspace custom backend:
 
 ```bash
 pip install "fxmacrodata[workspace]"
@@ -178,6 +183,8 @@ http://127.0.0.1:7779
 
 Workspace exposes `/widgets.json`, `/apps.json`, `/catalogue`,
 `/release_calendar`, `/macro_indicator`, `/forex`, `/cot`, and `/commodity`.
+Swagger/OpenAPI docs are disabled by default for this backend. For local
+debugging only, set `FXMACRODATA_OPENBB_ENABLE_DOCS=1` before starting it.
 
 ---
 

@@ -8,6 +8,7 @@ Run locally:
 from __future__ import annotations
 
 from datetime import date
+import os
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Request
@@ -20,11 +21,19 @@ from fxmacrodata.openbb.utils.helpers import get_json
 
 APP_TITLE = "FXMacroData OpenBB Backend"
 APP_VERSION = "0.1.0"
+ENABLE_DOCS = os.environ.get("FXMACRODATA_OPENBB_ENABLE_DOCS", "").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 
 app = FastAPI(
     title=APP_TITLE,
     description="OpenBB Workspace widgets and apps backed by FXMacroData.",
     version=APP_VERSION,
+    docs_url="/docs" if ENABLE_DOCS else None,
+    redoc_url="/redoc" if ENABLE_DOCS else None,
+    openapi_url="/openapi.json" if ENABLE_DOCS else None,
 )
 
 app.add_middleware(

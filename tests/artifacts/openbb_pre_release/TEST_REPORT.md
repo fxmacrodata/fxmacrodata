@@ -11,7 +11,7 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 | Area | Result | Evidence |
 |---|---:|---|
 | Local SDK test suite | Pass | `27 passed, 1 skipped in 9.19s` |
-| Clean dev environment test suite | Pass | `31 passed, 1 warning in 9.80s` after `python -m pip install -e ".[dev]"` |
+| Clean dev environment test suite | Pass | `33 passed, 3 warnings in 9.45s` after `python -m pip install -e ".[dev]"` |
 | Lint | Pass | `python -m ruff check fxmacrodata tests` |
 | Formatting | Pass | `python -m black --check fxmacrodata tests` |
 | Type check | Pass | `python -m mypy fxmacrodata` |
@@ -25,7 +25,7 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 | OpenBB build | Pass | `openbb-build` discovered `fxmacrodata@1.2.0` |
 | OpenBB Python command, public data | Pass | `obb.fxmacrodata.data_catalogue(currency="USD")` returned `OBBject`, dataframe shape `(46, 17)`, includes `inflation` |
 | OpenBB Python commands, protected data | Pass | AUD GDP `(13, 13)`, EUR/USD FX `(20, 6)`, EUR COT `(20, 33)`, gold commodity `(20, 2)` |
-| Workspace backend endpoints | Pass | `/docs`, `/widgets.json`, `/apps.json`, `/catalogue?currency=USD`, `/release_calendar?currency=USD` all returned `200 OK` |
+| Workspace backend endpoints | Pass | OpenBB Platform API launcher served `/health`, `/widgets.json`, `/apps.json`, and `/catalogue?currency=USD` as `200 OK`; `/docs` and `/openapi.json` returned `404` by default |
 
 ## Issues Found And Fixed
 
@@ -39,13 +39,11 @@ No PyPI publish, GitHub release, tag, or OpenBB submission was performed.
 | Protected live tests could fail noisily in CI when no API key was configured. | Centralized the API-key skip in the keyed-client fixture and added mocked auth tests for deterministic coverage. |
 | The optional OpenBB provider fallback failed `mypy` when `openbb_core` was absent. | Reworked the provider import fallback to avoid assigning `None` to the imported provider class symbol. |
 | The repo had no safe PR validation workflow; existing CI/CD only runs on `main`/`dev` and includes release/publish steps. | Added `.github/workflows/pr-validation.yml` with read-only validation on PRs and `codex/**` pushes. |
+| The Workspace backend exposed FastAPI Swagger/OpenAPI docs by default. | Disabled `/docs`, `/redoc`, and `/openapi.json` unless `FXMACRODATA_OPENBB_ENABLE_DOCS=1` is set for local debugging. |
+| The Workspace backend had not been checked through OpenBB's own API launcher. | Added dev dependency `openbb-platform-api>=1.3.6`, a launcher import test, and a local `openbb-api --app fxmacrodata/openbb/workspace_backend.py --name app` smoke run. |
 | Current `openbb-core` rejected router command signatures because postponed annotations hid actual parameter types. | Removed postponed annotations from `fxmacrodata.openbb.router`. |
 
 ## Screenshots
-
-### FastAPI Docs
-
-![OpenBB backend docs](openbb_backend_docs.png)
 
 ### Workspace Widgets JSON
 
