@@ -37,7 +37,7 @@ APP_TITLE = "FXMacroData OpenBB Backend"
 try:
     APP_VERSION = version("fxmacrodata")
 except PackageNotFoundError:
-    APP_VERSION = "1.2.0"
+    APP_VERSION = "1.2.1"
 ENABLE_DOCS = os.environ.get("FXMACRODATA_OPENBB_ENABLE_DOCS", "").lower() in {
     "1",
     "true",

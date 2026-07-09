@@ -34,7 +34,7 @@ from typing import Any
 try:
     __version__ = version("fxmacrodata")
 except PackageNotFoundError:
-    __version__ = "1.2.0"
+    __version__ = "1.2.1"
 
 _OpenBBProvider: Any = None
 try:

@@ -21,7 +21,7 @@
   <h1>FXMacroData OpenBB Submission Readiness Report</h1>
   <p><strong>Date:</strong> 2026-07-09<br>
   <strong>Repository:</strong> <code>C:\Users\rober\dev\fxmacrodata\fxmacrodata</code><br>
-  <strong>Release candidate:</strong> <code>fxmacrodata</code> 1.2.0<br>
+  <strong>Release candidate:</strong> <code>fxmacrodata</code> 1.2.1<br>
   <strong>Branch:</strong> <code>codex/openbb-pre-release-validation</code></p>
   <p>No PyPI publish, GitHub release, tag, OpenBB PR, or external push was performed.</p>
 
@@ -35,7 +35,7 @@
     <tr><td>Package build and metadata</td><td class="pass">Pass</td><td><code>python -m build</code> and <code>python -m twine check dist\*</code></td></tr>
     <tr><td>Fresh wheel install</td><td class="pass">Pass</td><td>Installed wheel with OpenBB API, Workspace, and MCP extras in a clean venv</td></tr>
     <tr><td>OpenBB entry points</td><td class="pass">Pass</td><td><code>openbb_core_extension</code> and <code>openbb_provider_extension</code> expose <code>fxmacrodata</code></td></tr>
-    <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.0</code></td></tr>
+    <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.1</code></td></tr>
     <tr><td>Generated OpenBB API</td><td class="pass">Pass</td><td>Returned USD catalogue, macro history, and release calendar rows</td></tr>
     <tr><td>Custom Workspace backend</td><td class="pass">Pass</td><td>Returned widgets, apps, hosted app images, macro, COT, calendar, and timeline data</td></tr>
     <tr><td>Human-readable datetimes</td><td class="pass">Pass</td><td>Macro, COT, and calendar rows use <code>YYYY-MM-DD HH:MM UTC</code></td></tr>
@@ -49,7 +49,7 @@
   <h2>Remaining Before External Submission</h2>
   <ul>
     <li>Approval to commit and push the SDK branch.</li>
-    <li>Approval to publish/release <code>fxmacrodata</code> 1.2.0 to PyPI.</li>
+    <li>Approval to publish/release <code>fxmacrodata</code> 1.2.1 to PyPI.</li>
     <li>Approval to open the OpenBB upstream catalogue/listing PR.</li>
     <li>Optional maintainer follow-up: build an in-tree <code>openbb_platform/providers/fxmacrodata</code> package only if OpenBB maintainers request it.</li>
   </ul>
