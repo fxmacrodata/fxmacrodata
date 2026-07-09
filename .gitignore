@@ -55,3 +55,7 @@ Desktop.ini
 
 # Logs
 *.log
+
+# Local OpenBB validation artifacts
+tests/artifacts/openbb_pre_release/*.pid
+tests/artifacts/openbb_pre_release/dist_validation*/

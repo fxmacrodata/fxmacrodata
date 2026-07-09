@@ -11,6 +11,10 @@ from fxmacrodata.openbb.metadata import (
 )
 
 
+def _params_by_name(widget):
+    return {param["paramName"]: param.get("value") for param in widget["params"]}
+
+
 def test_openapi_extra_contains_workspace_and_mcp_config():
     """Router metadata should support generated Workspace and MCP integrations."""
     extra = openapi_extra("fx_historical")
@@ -49,10 +53,30 @@ def test_custom_backend_widgets_match_workspace_contract():
         "fxmacrodata_forex",
         "fxmacrodata_cot",
         "fxmacrodata_commodity",
+        "fxmacrodata_release_timeline",
     } == set(widgets)
     assert widgets["fxmacrodata_catalogue"]["endpoint"] == "catalogue"
-    assert widgets["fxmacrodata_forex"]["params"]
+    assert widgets["fxmacrodata_release_timeline"]["type"] == "chart"
+    assert _params_by_name(widgets["fxmacrodata_forex"])["base"] == "USD"
+    assert _params_by_name(widgets["fxmacrodata_forex"])["quote"] == "JPY"
+    assert _params_by_name(widgets["fxmacrodata_cot"])["currency"] == "USD"
     assert {app["name"] for app in apps} == {
         "FXMacroData Macro Event Radar",
-        "FXMacroData FX Research Board",
+        "FXMacroData USD Macro Monitor",
+        "FXMacroData Pro FX Board",
     }
+    for app in apps:
+        assert app["img"].startswith("data:image/svg+xml,")
+        assert app["img_dark"].startswith("data:image/svg+xml,")
+        assert app["img_light"].startswith("data:image/svg+xml,")
+
+    subscriber_app = next(
+        app for app in apps if app["name"] == "FXMacroData Pro FX Board"
+    )
+    layout = subscriber_app["tabs"]["research"]["layout"]
+    forex_state = next(item for item in layout if item["i"] == "fxmacrodata_forex")
+    cot_state = next(item for item in layout if item["i"] == "fxmacrodata_cot")
+
+    assert forex_state["state"]["params"]["base"] == "USD"
+    assert forex_state["state"]["params"]["quote"] == "JPY"
+    assert cot_state["state"]["params"]["currency"] == "USD"

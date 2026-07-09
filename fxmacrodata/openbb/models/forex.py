@@ -15,6 +15,8 @@ from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
 from pydantic import Field
 
+from fxmacrodata.openbb.utils.datetimes import with_human_announcement_datetime
+
 
 class FXMacroDataFxHistoricalQueryParams(QueryParams):
     """Query parameters for FXMacroData FX spot-rate data."""
@@ -39,9 +41,9 @@ class FXMacroDataFxHistoricalData(Data):
         default=None,
         description="End-of-day spot rate (base / quote).",
     )
-    announcement_datetime: Optional[int] = Field(
+    announcement_datetime: Optional[str] = Field(
         default=None,
-        description="Unix epoch (UTC seconds) of any associated announcement.",
+        description="Associated announcement datetime formatted as YYYY-MM-DD HH:MM UTC.",
     )
 
 
@@ -95,5 +97,11 @@ class FXMacroDataFxHistoricalFetcher(
         The API returns the rate as ``val``; this is renamed to ``close`` so
         that the field name is consistent with standard OHLCV conventions.
         """
-        normalised = [{**row, "close": row.get("val")} for row in data]
+        normalised = [
+            with_human_announcement_datetime(
+                {**row, "close": row.get("val")},
+                drop_source_fields=True,
+            )
+            for row in data
+        ]
         return [FXMacroDataFxHistoricalData.model_validate(row) for row in normalised]

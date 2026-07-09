@@ -123,7 +123,13 @@ async def test_release_calendar_fetcher_filters_indicator(
 
     async def fake_get_data(path, params, api_key, **kwargs):
         calls.append({"path": path, "params": params, "api_key": api_key})
-        return [{"announcement_datetime": 1767261600, "release": "inflation"}]
+        return [
+            {
+                "announcement_datetime": 1767261600,
+                "announcement_datetime_local": "2026-01-01T21:00:00+11:00",
+                "release": "inflation",
+            }
+        ]
 
     monkeypatch.setattr(helpers, "get_data", fake_get_data)
 
@@ -141,4 +147,5 @@ async def test_release_calendar_fetcher_filters_indicator(
         }
     ]
     assert rows[0].release == "inflation"
-    assert rows[0].announcement_datetime == 1767261600
+    assert rows[0].announcement_datetime == "2026-01-01 10:00 UTC"
+    assert "announcement_datetime_local" not in rows[0].model_dump()

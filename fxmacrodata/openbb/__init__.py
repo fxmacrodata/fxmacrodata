@@ -15,8 +15,8 @@ Then use the OpenBB Python interface::
 
     obb.user.credentials.fxmacrodata_api_key = "YOUR_KEY"
     df = obb.fxmacrodata.fx_historical(
-        base="EUR",
-        quote="USD",
+        base="USD",
+        quote="JPY",
         provider="fxmacrodata",
     ).to_df()
 
@@ -28,9 +28,13 @@ Fetcher classes can also be imported directly from
     )
 """
 
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
-__version__ = "0.1.0"
+try:
+    __version__ = version("fxmacrodata")
+except PackageNotFoundError:
+    __version__ = "1.2.0"
 
 _OpenBBProvider: Any = None
 try:
@@ -82,9 +86,9 @@ else:
             "FXMacroDataDataCatalogue": FXMacroDataDataCatalogueFetcher,
             # Usage: obb.fxmacrodata.macro_indicators(currency="USD", indicator="inflation")
             "FXMacroDataMacroIndicators": FXMacroDataMacroIndicatorsFetcher,
-            # Usage: obb.fxmacrodata.fx_historical(base="AUD", quote="USD")
+            # Usage: obb.fxmacrodata.fx_historical(base="USD", quote="JPY")
             "FXMacroDataFxHistorical": FXMacroDataFxHistoricalFetcher,
-            # Usage: obb.fxmacrodata.cot(currency="EUR")
+            # Usage: obb.fxmacrodata.cot(currency="USD")
             "FXMacroDataCot": FXMacroDataCotFetcher,
             # Usage: obb.fxmacrodata.commodity(indicator="gold")
             "FXMacroDataCommodity": FXMacroDataCommodityFetcher,

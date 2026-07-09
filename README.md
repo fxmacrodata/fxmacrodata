@@ -164,9 +164,9 @@ inflation = obb.fxmacrodata.macro_indicators(
     provider="fxmacrodata",
 ).to_df()
 
-eurusd = obb.fxmacrodata.fx_historical(
-    base="EUR",
-    quote="USD",
+usdjpy = obb.fxmacrodata.fx_historical(
+    base="USD",
+    quote="JPY",
     start_date="2024-01-01",
     provider="fxmacrodata",
 ).to_df()
@@ -197,9 +197,14 @@ http://127.0.0.1:7779
 ```
 
 Workspace exposes `/widgets.json`, `/apps.json`, `/catalogue`,
-`/release_calendar`, `/macro_indicator`, `/forex`, `/cot`, and `/commodity`.
-Swagger/OpenAPI docs are disabled by default for this backend. For local
-debugging only, set `FXMACRODATA_OPENBB_ENABLE_DOCS=1` before starting it.
+`/release_calendar`, `/release_calendar_timeline`, `/macro_indicator`,
+`/forex`, `/cot`, and `/commodity`. The custom backend includes public app
+templates for release-calendar and USD macro workflows, plus a subscriber FX
+research board for authenticated API key users. Workspace defaults use USD
+where a currency is required; changing to non-USD currencies is an explicit
+authenticated workflow. Swagger/OpenAPI docs are disabled by default for this
+backend. For local debugging only, set `FXMACRODATA_OPENBB_ENABLE_DOCS=1`
+before starting it.
 
 Run OpenBB MCP:
 
@@ -217,8 +222,8 @@ openbb-build
 openbb
 ```
 
-See `docs/openbb-integration.md` for the full integration matrix and the
-separate upstream OpenBB repository contribution path.
+See `docs/openbb-integration.md` for the full integration matrix and
+`docs/openbb-github-submission.md` for the upstream OpenBB catalogue PR plan.
 
 ---
 
