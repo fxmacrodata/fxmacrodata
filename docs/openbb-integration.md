@@ -27,8 +27,8 @@ from openbb import obb
 obb.user.credentials.fxmacrodata_api_key = "YOUR_API_KEY"
 
 df = obb.fxmacrodata.fx_historical(
-    base="EUR",
-    quote="USD",
+    base="USD",
+    quote="JPY",
     start_date="2024-01-01",
     provider="fxmacrodata",
 ).to_df()
@@ -72,6 +72,8 @@ The OpenBB Platform API can generate Workspace widget definitions from the
 installed OpenBB routes. FXMacroData routes include inline `widget_config`
 metadata so the generated `/widgets.json` output uses human-readable names,
 descriptions, defaults, categories, and table settings.
+OpenBB-facing announcement rows expose `announcement_datetime` as
+`YYYY-MM-DD HH:MM UTC`, not as raw epoch seconds.
 
 Run:
 
@@ -111,10 +113,27 @@ Endpoints:
 - `/apps.json`
 - `/catalogue`
 - `/release_calendar`
+- `/release_calendar_timeline`
 - `/macro_indicator`
 - `/forex`
 - `/cot`
 - `/commodity`
+
+The custom backend currently serves seven widgets: six table widgets and one
+Plotly release radar chart. It also serves three image-backed Workspace app
+templates:
+
+- `FXMacroData Macro Event Radar`: public release radar, release table, and
+  catalogue coverage widgets.
+- `FXMacroData USD Macro Monitor`: public USD macro history, release risk,
+  and catalogue freshness widgets that work without an FXMacroData API key.
+- `FXMacroData Pro FX Board`: FX spot, COT, commodities, and macro widgets for
+  authenticated Professional API key users.
+
+Workspace widget and app defaults use USD wherever a currency parameter is
+required. Users can switch to other currencies from Workspace controls, but
+those non-USD workflows should be treated as authenticated Professional API key
+usage.
 
 Use this path when the team wants only FXMacroData widgets and apps without a
 full OpenBB Platform API runtime.
@@ -159,9 +178,14 @@ router is available inside the OpenBB CLI environment.
 
 ## 7. Upstream OpenBB Repository Contribution
 
-The external package above is the normal independent-extension path. If the goal
-is to contribute FXMacroData into `OpenBB-finance/OpenBB`, prepare a separate PR
-against OpenBB's `develop` branch with a provider package under:
+The external package above is the normal independent-extension path. The first
+upstream PR should be a small catalogue/listing change in `OpenBB-finance/OpenBB`
+after the SDK is released to PyPI. Use `docs/openbb-github-submission.md` for
+the exact `assets/extensions/provider.json` object, README row, PR body, and
+release gates.
+
+If OpenBB maintainers request a full in-tree provider package, prepare a
+separate PR against OpenBB's `develop` branch with a provider package under:
 
 ```text
 openbb_platform/providers/fxmacrodata/

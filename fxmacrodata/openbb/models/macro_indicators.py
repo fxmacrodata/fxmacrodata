@@ -15,6 +15,8 @@ from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
 from pydantic import Field
 
+from fxmacrodata.openbb.utils.datetimes import with_human_announcement_datetime
+
 
 class FXMacroDataMacroIndicatorsQueryParams(QueryParams):
     """Query parameters for FXMacroData macro-indicator data."""
@@ -44,14 +46,14 @@ class FXMacroDataMacroIndicatorsQueryParams(QueryParams):
 class FXMacroDataMacroIndicatorsData(Data):
     """A single macro-indicator data point from FXMacroData."""
 
-    date: dateType = Field(description="Data publication date.")
+    announcement_datetime: Optional[str] = Field(
+        default=None,
+        description="Official announcement datetime formatted as YYYY-MM-DD HH:MM UTC.",
+    )
+    date: dateType = Field(description="Observation period date.")
     val: Optional[float] = Field(
         default=None,
         description="Indicator value in the unit defined by the catalogue.",
-    )
-    announcement_datetime: Optional[int] = Field(
-        default=None,
-        description="Unix epoch (UTC seconds) of the official announcement.",
     )
     pct_change: Optional[float] = Field(
         default=None,
@@ -109,4 +111,9 @@ class FXMacroDataMacroIndicatorsFetcher(
         **kwargs: Any,
     ) -> List[FXMacroDataMacroIndicatorsData]:
         """Transform raw API records into validated data models."""
-        return [FXMacroDataMacroIndicatorsData.model_validate(row) for row in data]
+        return [
+            FXMacroDataMacroIndicatorsData.model_validate(
+                with_human_announcement_datetime(row, drop_source_fields=True)
+            )
+            for row in data
+        ]
