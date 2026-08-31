@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-DEFAULT_BASE_URL = "https://fxmacrodata.com/api"
+DEFAULT_BASE_URL = "https://api.fxmacrodata.com"
 
 CATALOGUE_CURRENCIES = [
     "AUD",

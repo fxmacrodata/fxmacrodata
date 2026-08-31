@@ -32,7 +32,7 @@ def test_non_usd_indicator_uses_api_key_header(monkeypatch: pytest.MonkeyPatch):
 
     assert calls == [
         {
-            "url": "https://fxmacrodata.com/api/v1/announcements/aud/gdp",
+            "url": "https://api.fxmacrodata.com/v1/announcements/aud/gdp",
             "headers": {"X-API-Key": "test-key"},
             "params": {"start_date": "2024-01-01"},
         }
@@ -80,7 +80,7 @@ def test_fx_price_uses_api_key_header(monkeypatch: pytest.MonkeyPatch):
 
     assert calls == [
         {
-            "url": "https://fxmacrodata.com/api/v1/forex/eur/usd",
+            "url": "https://api.fxmacrodata.com/v1/forex/eur/usd",
             "headers": {"X-API-Key": "test-key"},
             "params": {"start_date": "2026-01-01", "indicators": "sma_20"},
         }

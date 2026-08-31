@@ -55,7 +55,7 @@ def test_sync_request_sends_header_auth_and_filters_null_params(
     monkeypatch.setattr(helpers.requests, "get", fake_get)
 
     payload = helpers._sync_request(
-        "https://fxmacrodata.com/api/v1/calendar/usd",
+        "https://api.fxmacrodata.com/v1/calendar/usd",
         {"indicator": None, "limit": 10},
         api_key="test-key",
         auth_mode="header",
@@ -65,7 +65,7 @@ def test_sync_request_sends_header_auth_and_filters_null_params(
     assert payload == {"data": [{"ok": True}]}
     assert calls == [
         {
-            "url": "https://fxmacrodata.com/api/v1/calendar/usd",
+            "url": "https://api.fxmacrodata.com/v1/calendar/usd",
             "params": {"limit": 10},
             "headers": {"X-API-Key": "test-key"},
             "timeout": 30,

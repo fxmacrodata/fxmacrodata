@@ -4,7 +4,7 @@ from .exceptions import FXMacroDataError
 
 
 class Client:
-    BASE_URL = "https://fxmacrodata.com/api"
+    BASE_URL = "https://api.fxmacrodata.com"
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
