@@ -7,20 +7,20 @@
 
 The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators**, **forex prices**, **release calendars**, **COT positioning**, and **commodity prices** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
-It includes both synchronous and asynchronous clients and supports free USD macro endpoints.
+It includes both synchronous and asynchronous clients, and USD macro endpoints work without an API key.
 
 ---
 
 ## 🌟 Features
 
 - Fetch:
-  - **Macroeconomic indicators** — policy rates, inflation, GDP, unemployment, bond yields, and 100+ more
+  - **Macroeconomic indicators** — policy rates, inflation, GDP, unemployment, bond yields, and more: 97 distinct indicators across 656 endpoints
   - **FX spot rates** with optional technical indicators (SMA, RSI, MACD, Bollinger Bands)
   - **Release calendars** — upcoming economic data release dates
   - **Data catalogue** — discover available indicators per currency
   - **COT data** — CFTC Commitment of Traders positioning
   - **Commodity prices** — gold, silver, platinum
-- Free access to **USD** macro data.
+- Free access to **USD** macro data, covering the most recent 90 days. An API key lifts the window to full history.
 - FX spot-rate history through `get_fx_price`.
 - API key required for protected datasets, including non-USD indicators, FX spot-rate history, COT, and commodities.
 - Full support for:
@@ -265,7 +265,7 @@ Fetches commodity price time series.
 
 ## 💹 Supported Currencies & Indicators
 
-**18 currencies supported:** USD, EUR, GBP, JPY, AUD, CAD, CHF, NZD, HKD, SGD, NOK, PLN, SEK, DKK, BRL, CNY, KRW, MXN.
+**18 currencies supported:** AUD, BRL, CAD, CHF, CNH, CNY, DKK, EUR, GBP, ILS, JPY, NGN, NOK, NZD, PEN, SEK, THB, USD.
 
 The table below shows a sample of indicator coverage across four major currencies. Use `get_data_catalogue()` to discover the full list for any currency.
 
