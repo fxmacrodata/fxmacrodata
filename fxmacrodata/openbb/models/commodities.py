@@ -16,6 +16,8 @@ from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
 from pydantic import Field
 
+from fxmacrodata.openbb.utils.datetimes import with_human_announcement_datetime
+
 
 class FXMacroDataCommodityQueryParams(QueryParams):
     """Query parameters for FXMacroData commodity price data."""
@@ -44,9 +46,9 @@ class FXMacroDataCommodityData(Data):
         default=None,
         description="Commodity price in the unit defined by FXMacroData.",
     )
-    announcement_datetime: Optional[int] = Field(
+    announcement_datetime: Optional[str] = Field(
         default=None,
-        description="Unix epoch (UTC seconds) of any associated price publication.",
+        description="Associated publication datetime formatted as YYYY-MM-DD HH:MM UTC.",
     )
     pct_change: Optional[float] = Field(
         default=None,
@@ -102,4 +104,9 @@ class FXMacroDataCommodityFetcher(
         **kwargs: Any,
     ) -> List[FXMacroDataCommodityData]:
         """Transform raw API records into validated data models."""
-        return [FXMacroDataCommodityData.model_validate(row) for row in data]
+        return [
+            FXMacroDataCommodityData.model_validate(
+                with_human_announcement_datetime(row, drop_source_fields=True)
+            )
+            for row in data
+        ]

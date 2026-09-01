@@ -20,6 +20,8 @@ from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
 from pydantic import Field
 
+from fxmacrodata.openbb.utils.datetimes import with_human_announcement_datetime
+
 
 class FXMacroDataCotQueryParams(QueryParams):
     """Query parameters for FXMacroData CFTC COT positioning data."""
@@ -43,6 +45,10 @@ class FXMacroDataCotQueryParams(QueryParams):
 class FXMacroDataCotData(Data):
     """A single weekly COT positioning record from FXMacroData."""
 
+    announcement_datetime: Optional[str] = Field(
+        default=None,
+        description="CFTC publication datetime formatted as YYYY-MM-DD HH:MM UTC.",
+    )
     date: dateType = Field(description="Report date (Tuesday of the reference week).")
     open_interest: Optional[int] = Field(
         default=None,
@@ -92,10 +98,6 @@ class FXMacroDataCotData(Data):
         default=None,
         description="Non-reportable (small trader) short positions.",
     )
-    announcement_datetime: Optional[int] = Field(
-        default=None,
-        description="Unix epoch (UTC seconds) of the CFTC publication.",
-    )
 
 
 class FXMacroDataCotFetcher(
@@ -142,4 +144,9 @@ class FXMacroDataCotFetcher(
         **kwargs: Any,
     ) -> List[FXMacroDataCotData]:
         """Transform raw API records into validated data models."""
-        return [FXMacroDataCotData.model_validate(row) for row in data]
+        return [
+            FXMacroDataCotData.model_validate(
+                with_human_announcement_datetime(row, drop_source_fields=True)
+            )
+            for row in data
+        ]

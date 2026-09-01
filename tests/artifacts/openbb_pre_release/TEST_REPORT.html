@@ -3,108 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FXMacroData OpenBB Pre-Release Test Report</title>
+  <title>FXMacroData OpenBB Submission Readiness Report</title>
   <style>
-    body {
-      color: #17202a;
-      font-family: Arial, sans-serif;
-      margin: 32px;
-      max-width: 1180px;
-    }
-    h1, h2 {
-      color: #0f2742;
-    }
-    table {
-      border-collapse: collapse;
-      margin: 16px 0 28px;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid #d6dee8;
-      padding: 9px 11px;
-      text-align: left;
-      vertical-align: top;
-    }
-    th {
-      background: #eef4fa;
-    }
-    code {
-      background: #f3f5f7;
-      border-radius: 4px;
-      padding: 2px 4px;
-    }
-    img {
-      border: 1px solid #d6dee8;
-      display: block;
-      margin: 10px 0 28px;
-      max-width: 100%;
-    }
-    .pass {
-      color: #087a3d;
-      font-weight: 700;
-    }
+    body { background:#070b12; color:#e8f2ff; font-family:Arial,sans-serif; margin:32px; max-width:1180px; }
+    h1, h2 { color:#ffffff; }
+    p, li { color:#b7c7da; line-height:1.5; }
+    table { border-collapse:collapse; margin:16px 0 28px; width:100%; }
+    th, td { border:1px solid #263344; padding:9px 11px; text-align:left; vertical-align:top; }
+    th { background:#111a27; color:#dff7ff; }
+    tr:nth-child(even) td { background:#0d141f; }
+    code { background:#111a27; border:1px solid #263344; border-radius:4px; padding:2px 4px; }
+    img { border:1px solid #263344; border-radius:8px; display:block; margin:10px 0 28px; max-width:100%; }
+    .pass { color:#43f0c8; font-weight:700; }
   </style>
 </head>
 <body>
-  <h1>FXMacroData OpenBB Pre-Release Test Report</h1>
-  <p><strong>Date:</strong> 2026-07-07<br>
+  <h1>FXMacroData OpenBB Submission Readiness Report</h1>
+  <p><strong>Date:</strong> 2026-07-09<br>
   <strong>Repository:</strong> <code>C:\Users\rober\dev\fxmacrodata\fxmacrodata</code><br>
-  <strong>Release candidate:</strong> <code>fxmacrodata</code> 1.2.0</p>
-  <p>No PyPI publish, GitHub release, tag, or OpenBB submission was performed.</p>
+  <strong>Release candidate:</strong> <code>fxmacrodata</code> 1.2.1<br>
+  <strong>Branch:</strong> <code>codex/openbb-pre-release-validation</code></p>
+  <p>No PyPI publish, GitHub release, tag, OpenBB PR, or external push was performed.</p>
 
   <h2>Summary</h2>
   <table>
     <tr><th>Area</th><th>Result</th><th>Evidence</th></tr>
-    <tr><td>Local SDK test suite</td><td class="pass">Pass</td><td><code>27 passed, 1 skipped in 9.19s</code></td></tr>
-    <tr><td>Clean dev environment test suite</td><td class="pass">Pass</td><td><code>33 passed, 3 warnings in 9.45s</code> after <code>python -m pip install -e ".[dev]"</code></td></tr>
+    <tr><td>Full SDK test suite</td><td class="pass">Pass</td><td><code>python -m pytest tests -q</code> returned <code>39 passed, 2 skipped</code></td></tr>
     <tr><td>Lint</td><td class="pass">Pass</td><td><code>python -m ruff check fxmacrodata tests</code></td></tr>
     <tr><td>Formatting</td><td class="pass">Pass</td><td><code>python -m black --check fxmacrodata tests</code></td></tr>
-    <tr><td>Type check</td><td class="pass">Pass</td><td><code>python -m mypy fxmacrodata</code></td></tr>
-    <tr><td>Python compile check</td><td class="pass">Pass</td><td><code>python -m compileall fxmacrodata</code></td></tr>
-    <tr><td>Package build</td><td class="pass">Pass</td><td>Built wheel and sdist for <code>1.2.0</code></td></tr>
-    <tr><td>Package metadata</td><td class="pass">Pass</td><td><code>twine check dist\*</code> passed</td></tr>
-    <tr><td>PR validation workflow</td><td class="pass">Pass</td><td>Added validation-only GitHub Actions workflow for PRs and <code>codex/**</code> pushes; no publish/release steps</td></tr>
-    <tr><td>OpenBB entry-point smoke</td><td class="pass">Pass</td><td>Clean environment verified core/provider entry points, provider registration, Workspace widgets, and apps</td></tr>
-    <tr><td>Fresh wheel install, Workspace extra</td><td class="pass">Pass</td><td>Backend functions loaded from installed wheel</td></tr>
-    <tr><td>Fresh wheel install, OpenBB extra</td><td class="pass">Pass</td><td>Provider, router, and entry points loaded from installed wheel</td></tr>
-    <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.0</code></td></tr>
-    <tr><td>OpenBB Python command, public data</td><td class="pass">Pass</td><td>USD catalogue returned shape <code>(46, 17)</code> and includes <code>inflation</code></td></tr>
-    <tr><td>OpenBB Python commands, protected data</td><td class="pass">Pass</td><td>AUD GDP, EUR/USD FX, EUR COT, and gold commodity returned rows</td></tr>
-    <tr><td>Workspace backend endpoints</td><td class="pass">Pass</td><td>OpenBB Platform API launcher served <code>/health</code>, <code>/widgets.json</code>, <code>/apps.json</code>, and <code>/catalogue?currency=USD</code> as <code>200 OK</code>; <code>/docs</code> and <code>/openapi.json</code> returned <code>404</code> by default</td></tr>
+    <tr><td>Type check</td><td class="pass">Pass</td><td><code>python -m mypy fxmacrodata</code> in a clean dev validation venv</td></tr>
+    <tr><td>Package build and metadata</td><td class="pass">Pass</td><td><code>python -m build</code> and <code>python -m twine check dist\*</code></td></tr>
+    <tr><td>Fresh wheel install</td><td class="pass">Pass</td><td>Installed wheel with OpenBB API, Workspace, and MCP extras in a clean venv</td></tr>
+    <tr><td>OpenBB entry points</td><td class="pass">Pass</td><td><code>openbb_core_extension</code> and <code>openbb_provider_extension</code> expose <code>fxmacrodata</code></td></tr>
+    <tr><td>OpenBB build</td><td class="pass">Pass</td><td><code>openbb-build</code> discovered <code>fxmacrodata@1.2.1</code></td></tr>
+    <tr><td>Generated OpenBB API</td><td class="pass">Pass</td><td>Returned USD catalogue, macro history, and release calendar rows</td></tr>
+    <tr><td>Custom Workspace backend</td><td class="pass">Pass</td><td>Returned widgets, apps, hosted app images, macro, COT, calendar, and timeline data</td></tr>
+    <tr><td>Human-readable datetimes</td><td class="pass">Pass</td><td>Macro, COT, and calendar rows use <code>YYYY-MM-DD HH:MM UTC</code></td></tr>
   </table>
 
-  <h2>Issues Found And Fixed</h2>
-  <table>
-    <tr><th>Issue</th><th>Fix</th></tr>
-    <tr><td>SDK tests still assumed FX spot history was free, but live API returns <code>401 api_key_required</code>.</td><td>Updated sync and async clients so <code>get_fx_price</code> requires and sends <code>X-API-Key</code>; updated README and tests.</td></tr>
-    <tr><td>Build produced another <code>1.1.0</code> package.</td><td>Bumped release candidate metadata to <code>1.2.0</code>.</td></tr>
-    <tr><td>Setuptools warned about deprecated TOML table license syntax.</td><td>Changed license metadata to <code>license = "MIT"</code>.</td></tr>
-    <tr><td>The previous <code>httpx2&gt;=0.28</code> dev dependency was invalid for the current <code>httpx2</code> package line.</td><td>Corrected it to <code>httpx2&gt;=2.0</code> and kept <code>httpx&gt;=0.24</code> for OpenBB/test tooling compatibility.</td></tr>
-    <tr><td>Async helper tests depended on a globally installed pytest plugin.</td><td>Added <code>pytest-asyncio&gt;=0.23</code> to dev requirements and validated in a clean environment.</td></tr>
-    <tr><td>Protected live tests could fail noisily in CI when no API key was configured.</td><td>Centralized the API-key skip in the keyed-client fixture and added mocked auth tests for deterministic coverage.</td></tr>
-    <tr><td>The optional OpenBB provider fallback failed <code>mypy</code> when <code>openbb_core</code> was absent.</td><td>Reworked the provider import fallback to avoid assigning <code>None</code> to the imported provider class symbol.</td></tr>
-    <tr><td>The repo had no safe PR validation workflow; existing CI/CD only runs on <code>main</code>/<code>dev</code> and includes release/publish steps.</td><td>Added <code>.github/workflows/pr-validation.yml</code> with read-only validation on PRs and <code>codex/**</code> pushes.</td></tr>
-    <tr><td>The Workspace backend exposed FastAPI Swagger/OpenAPI docs by default.</td><td>Disabled <code>/docs</code>, <code>/redoc</code>, and <code>/openapi.json</code> unless <code>FXMACRODATA_OPENBB_ENABLE_DOCS=1</code> is set for local debugging.</td></tr>
-    <tr><td>The Workspace backend had not been checked through OpenBB's own API launcher.</td><td>Added dev dependency <code>openbb-platform-api&gt;=1.3.6</code>, a launcher import test, and a local <code>openbb-api --app fxmacrodata/openbb/workspace_backend.py --name app</code> smoke run.</td></tr>
-    <tr><td>Current <code>openbb-core</code> rejected router command signatures because postponed annotations hid actual parameter types.</td><td>Removed postponed annotations from <code>fxmacrodata.openbb.router</code>.</td></tr>
-  </table>
+  <h2>Visual Evidence</h2>
+  <img src="openbb_submission_visual_evidence.png" alt="OpenBB submission visual evidence">
+  <img src="openbb_workspace_macro_indicator_7796_current.png" alt="OpenBB Workspace macro endpoint">
+  <img src="openbb_generated_api_macro_indicator_7795_current.png" alt="OpenBB generated API macro endpoint">
 
-  <h2>Screenshots</h2>
-  <h3>Workspace Widgets JSON</h3>
-  <img src="openbb_widgets_json.png" alt="OpenBB widgets JSON">
-  <h3>Workspace Apps JSON</h3>
-  <img src="openbb_apps_json.png" alt="OpenBB apps JSON">
-  <h3>USD Catalogue Endpoint</h3>
-  <img src="openbb_catalogue_usd.png" alt="USD catalogue endpoint">
-  <h3>USD Release Calendar Endpoint</h3>
-  <img src="openbb_release_calendar_usd.png" alt="USD release calendar endpoint">
-
-  <h2>Remaining Before Release Approval</h2>
+  <h2>Remaining Before External Submission</h2>
   <ul>
-    <li>Optional: test inside a logged-in OpenBB Workspace UI session at <code>pro.openbb.co</code>; current screenshots validate the custom backend endpoints, not the hosted OpenBB UI.</li>
-    <li>Optional: decide whether to host the Workspace backend publicly over HTTPS or document local-only Workspace usage for the first release.</li>
-    <li>Required before merge/release: push the validation branch and confirm the new PR validation workflow passes on GitHub.</li>
-    <li>Required before PyPI publish: final approval to publish <code>fxmacrodata</code> 1.2.0.</li>
+    <li>Approval to commit and push the SDK branch.</li>
+    <li>Approval to publish/release <code>fxmacrodata</code> 1.2.1 to PyPI.</li>
+    <li>Approval to open the OpenBB upstream catalogue/listing PR.</li>
+    <li>Optional maintainer follow-up: build an in-tree <code>openbb_platform/providers/fxmacrodata</code> package only if OpenBB maintainers request it.</li>
   </ul>
 </body>
 </html>

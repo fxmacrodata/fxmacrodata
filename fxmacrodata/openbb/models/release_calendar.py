@@ -16,6 +16,8 @@ from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
 from pydantic import Field
 
+from fxmacrodata.openbb.utils.datetimes import with_human_announcement_datetime
+
 
 class FXMacroDataReleaseCalendarQueryParams(QueryParams):
     """Query parameters for FXMacroData economic release calendar."""
@@ -39,8 +41,8 @@ class FXMacroDataReleaseCalendarQueryParams(QueryParams):
 class FXMacroDataReleaseCalendarData(Data):
     """A single upcoming release entry from the FXMacroData release calendar."""
 
-    announcement_datetime: int = Field(
-        description="Unix epoch (UTC seconds) of the scheduled announcement.",
+    announcement_datetime: str = Field(
+        description="Scheduled announcement datetime formatted as YYYY-MM-DD HH:MM UTC.",
     )
     release: str = Field(
         description="Indicator name for the scheduled release (e.g. inflation).",
@@ -91,4 +93,9 @@ class FXMacroDataReleaseCalendarFetcher(
         **kwargs: Any,
     ) -> List[FXMacroDataReleaseCalendarData]:
         """Transform raw API records into validated data models."""
-        return [FXMacroDataReleaseCalendarData.model_validate(row) for row in data]
+        return [
+            FXMacroDataReleaseCalendarData.model_validate(
+                with_human_announcement_datetime(row, drop_source_fields=True)
+            )
+            for row in data
+        ]
