@@ -7,7 +7,9 @@
 
 The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators**, **forex prices**, **release calendars**, **COT positioning**, and **commodity prices** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
 
-It includes both synchronous and asynchronous clients, and USD macro endpoints work without an API key.
+Use synchronous and asynchronous clients to bring the data into research notebooks, backtests and applications.
+
+[Subscribe to FXMacroData](https://fxmacrodata.com/subscribe?utm_source=github&utm_medium=referral&utm_campaign=open_source_integrations&utm_content=python_sdk_subscribe) for non-USD data, full available history, FX, commodities and positioning. Use the public USD workflow to evaluate the integration before connecting your subscription.
 
 ---
 
@@ -20,9 +22,9 @@ It includes both synchronous and asynchronous clients, and USD macro endpoints w
   - **Data catalogue** — discover available indicators per currency
   - **COT data** — CFTC Commitment of Traders positioning
   - **Commodity prices** — gold, silver, platinum
-- Free access to **USD** macro data, covering the most recent 90 days. An API key lifts the window to full history.
+- Evaluate with public **USD** macro data covering the most recent 90 days; connect your FXMacroData subscription for full available history.
 - FX spot-rate history through `get_fx_price`.
-- API key required for protected datasets, including non-USD indicators, FX spot-rate history, COT, and commodities.
+- A key from an authorized FXMacroData subscription is required for protected datasets, including non-USD indicators, FX spot-rate history, COT, and commodities.
 - Full support for:
   - **Synchronous client**
   - **Asynchronous client**
