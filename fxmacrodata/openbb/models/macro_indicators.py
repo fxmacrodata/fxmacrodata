@@ -28,7 +28,8 @@ class FXMacroDataMacroIndicatorsQueryParams(QueryParams):
     indicator: str = Field(
         description=(
             "Indicator name (e.g. inflation, gdp, unemployment, policy_rate). "
-            "See https://fxmacrodata.com/documentation for the full list."
+            "See https://fxmacrodata.com/documentation?utm_source=openbb&utm_medium=integration"
+            "&utm_campaign=fxmacrodata&utm_content=docs for the full list."
         )
     )
     start_date: Optional[dateType] = Field(

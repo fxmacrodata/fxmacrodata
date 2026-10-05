@@ -68,7 +68,10 @@ else:
 
     fxmacrodata_provider = _OpenBBProvider(
         name="fxmacrodata",
-        website="https://fxmacrodata.com",
+        website=(
+            "https://fxmacrodata.com/?utm_source=openbb&utm_medium=integration"
+            "&utm_campaign=fxmacrodata&utm_content=homepage"
+        ),
         description=(
             "FXMacroData provides macroeconomic indicator time series, FX spot "
             "rates, CFTC Commitment of Traders positioning, commodity prices, "

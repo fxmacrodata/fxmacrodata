@@ -31,8 +31,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://fxmacrodata.com/?utm_source=pypi&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=package"
-Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=package"
+Homepage = "https://fxmacrodata.com/?utm_source=pypi&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=homepage"
+Documentation = "https://fxmacrodata.com/api/docs?utm_source=pypi&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=docs"
 Source = "https://github.com/fxmacrodata/fxmacrodata"
 Issues = "https://github.com/fxmacrodata/fxmacrodata"
 
