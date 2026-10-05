@@ -46,7 +46,7 @@ def clean_api_key(api_key: Optional[str]) -> str:
     key = api_key.strip()
     if key and not _VALID_KEY.fullmatch(key):
         raise FXMacroDataError(
-            "API key contains spaces, quotes or non-printable characters. "
+            "API key contains spaces or non-printable characters. "
             "Check it was copied correctly."
         )
     return key

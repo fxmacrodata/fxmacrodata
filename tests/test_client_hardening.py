@@ -324,27 +324,29 @@ def test_async_default_timeout():
 # ----------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("bad_key", [f"{SECRET} x", f'"{SECRET}"', f"{SECRET}\x00"])
+@pytest.mark.parametrize("bad_key", [f"{SECRET} x", f"{SECRET}\tx", f"{SECRET}\x00"])
 def test_malformed_key_fails_without_echoing_it(monkeypatch, bad_key):
-    def fake_get(*args, **kwargs):
-        raise AssertionError("request should not be made")
-
-    monkeypatch.setattr("fxmacrodata.client.requests.get", fake_get)
+    calls = []
+    monkeypatch.setattr(
+        "fxmacrodata.client.requests.get", lambda *a, **k: calls.append(a)
+    )
 
     for call in (
         lambda c: c.get_indicator("aud", "gdp"),
         lambda c: c.get_fx_price("eur", "usd"),
         lambda c: c.get_commodities("gold"),
     ):
-        with pytest.raises(FXMacroDataError) as exc:
+        with pytest.raises(FXMacroDataError, match="API key contains") as exc:
             call(Client(api_key=bad_key))
         _assert_secret_absent(exc.value)
+
+    assert calls == []
 
 
 @pytest.mark.asyncio
 async def test_async_malformed_key_fails_without_echoing_it():
     client = AsyncClient(api_key=f"{SECRET}\r\nX-Injected: 1")
-    with pytest.raises(FXMacroDataError) as exc:
+    with pytest.raises(FXMacroDataError, match="API key contains") as exc:
         await client.get_indicator("aud", "gdp")
     _assert_secret_absent(exc.value)
     assert client.session is None  # failed before any connection
@@ -522,7 +524,7 @@ def test_openbb_cross_origin_redirect_with_key_is_refused(api, attacker):
 def test_openbb_malformed_key_is_not_logged_or_raised(api, caplog):
     from fxmacrodata.openbb.utils import helpers
 
-    with pytest.raises(FXMacroDataError) as exc:
+    with pytest.raises(FXMacroDataError, match="API key contains") as exc:
         helpers._sync_request(f"{api.origin}/v1/cot/aud", {}, api_key=f" {SECRET} x")
 
     _assert_secret_absent(exc.value)

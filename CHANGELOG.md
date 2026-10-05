@@ -17,7 +17,7 @@ recommended for everyone using an API key.
 - The API key is refused on a plain `http://` base URL unless the host is
   `localhost`, `127.0.0.1` or `::1`.
 - The API key never appears in exception messages or tracebacks. A key with
-  embedded whitespace, quotes or control characters is rejected before any
+  embedded whitespace or control characters is rejected before any
   request, instead of surfacing the HTTP library's error, which quoted the
   header value. Transport errors and error bodies are redacted, and error
   bodies are truncated to 1,000 characters.
