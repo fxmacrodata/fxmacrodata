@@ -303,8 +303,8 @@ MIT License © FXMacroData
 
 ## 🌐 Links
 
-- Website: https://fxmacrodata.com
-- API Docs: https://fxmacrodata.com/docs
+- Website: https://fxmacrodata.com/?utm_source=github&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=readme
+- API Docs: https://fxmacrodata.com/docs?utm_source=github&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=readme
 - GitHub: https://github.com/fxmacrodata/fxmacrodata
 - PyPI: https://pypi.org/project/fxmacrodata/
 - Readthedocs: https://fxmacrodata.readthedocs.io/en/latest/
