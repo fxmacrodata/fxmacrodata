@@ -14,11 +14,12 @@ def test_non_usd_indicator_uses_api_key_header(monkeypatch: pytest.MonkeyPatch):
 
     class FakeResponse:
         status_code = 200
+        headers: dict = {}
 
         def json(self) -> dict:
             return {"data": []}
 
-    def fake_get(url, headers=None, params=None):
+    def fake_get(url, headers=None, params=None, **kwargs):
         calls.append({"url": url, "headers": headers, "params": params})
         return FakeResponse()
 
@@ -61,11 +62,12 @@ def test_fx_price_uses_api_key_header(monkeypatch: pytest.MonkeyPatch):
 
     class FakeResponse:
         status_code = 200
+        headers: dict = {}
 
         def json(self) -> dict:
             return {"data": []}
 
-    def fake_get(url, headers=None, params=None):
+    def fake_get(url, headers=None, params=None, **kwargs):
         calls.append({"url": url, "headers": headers, "params": params})
         return FakeResponse()
 

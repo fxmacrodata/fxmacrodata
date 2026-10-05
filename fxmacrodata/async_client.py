@@ -1,13 +1,35 @@
+import asyncio
+import json
+from typing import Optional, Union
+
 import aiohttp  # type: ignore
-from typing import Optional
-from .exceptions import FXMacroDataError
+
+from . import _http
+from .exceptions import (
+    FXMacroDataError,
+    FXMacroDataTimeoutError,
+    FXMacroDataTransportError,
+)
+
+AsyncTimeout = Optional[Union[float, aiohttp.ClientTimeout]]
 
 
 class AsyncClient:
     BASE_URL = "https://api.fxmacrodata.com"
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        timeout: AsyncTimeout = _http.DEFAULT_TIMEOUT,
+    ):
+        """Create an async client.
+
+        ``timeout`` is the total seconds allowed per request, an
+        ``aiohttp.ClientTimeout`` for finer control, or ``None`` to wait
+        forever.
+        """
         self.api_key: Optional[str] = api_key
+        self.timeout = timeout
         self.session: Optional[aiohttp.ClientSession] = None
 
     async def __aenter__(self) -> "AsyncClient":
@@ -19,25 +41,77 @@ class AsyncClient:
             await self.session.close()
             self.session = None
 
-    async def _request(self, url: str, params: dict, headers: dict) -> dict:
+    def _client_timeout(self) -> aiohttp.ClientTimeout:
+        if isinstance(self.timeout, aiohttp.ClientTimeout):
+            return self.timeout
+        if self.timeout is None:
+            return aiohttp.ClientTimeout(total=None)
+        return aiohttp.ClientTimeout(total=float(self.timeout))
+
+    async def _request(self, url: str, params: Optional[dict], headers: dict) -> dict:
+        api_key = headers.get(_http.API_KEY_HEADER)
+        has_key = bool(api_key)
+        _http.check_transport(url, has_key)
         if not self.session:
             self.session = aiohttp.ClientSession()
-        async with self.session.get(url, headers=headers, params=params) as resp:
-            if resp.status != 200:
-                text = await resp.text()
-                raise FXMacroDataError(f"{resp.status} - {text}")
-            return await resp.json()
+        try:
+            for _ in range(_http.MAX_REDIRECTS + 1):
+                # Redirects are followed by hand: aiohttp re-sends custom
+                # headers like ours to whatever host a redirect names.
+                async with self.session.get(
+                    url,
+                    headers=headers,
+                    params=params,
+                    allow_redirects=False,
+                    timeout=self._client_timeout(),
+                ) as resp:
+                    location = resp.headers.get("Location")
+                    if resp.status in _http.REDIRECT_STATUSES and location:
+                        url = _http.resolve_redirect(url, location, has_key)
+                        params = None  # the Location carries the query string
+                        continue
+                    status = resp.status
+                    content_type = resp.headers.get("Content-Type")
+                    if status != 200:
+                        text = await resp.text()
+                        raise _http.api_error(status, text, api_key)
+                    body = await resp.read()
+                    break
+            else:
+                raise _http.too_many_redirects()
+        except FXMacroDataError:
+            raise
+        except asyncio.TimeoutError:
+            raise FXMacroDataTimeoutError("Request timed out.") from None
+        except Exception as e:
+            # `from None`: the original exception can quote header values.
+            raise FXMacroDataTransportError(
+                "Request failed: " + _http.redact(f"{type(e).__name__}: {e}", api_key)
+            ) from None
+
+        try:
+            data = json.loads(body)
+        except ValueError:
+            raise _http.invalid_json_error(status, content_type) from None
+        return _http.check_payload(data, status, api_key)
 
     def _auth_headers(self, currency: str, *, required: bool = True) -> dict:
         headers: dict[str, str] = {}
         if currency != "usd":
-            if required and not self.api_key:
+            api_key = _http.clean_api_key(self.api_key)
+            if required and not api_key:
                 raise FXMacroDataError(
                     f"API key required for {currency.upper()} endpoints."
                 )
-            if self.api_key:
-                headers["X-API-Key"] = self.api_key
+            if api_key:
+                headers[_http.API_KEY_HEADER] = api_key
         return headers
+
+    def _required_key_headers(self, what: str) -> dict:
+        api_key = _http.clean_api_key(self.api_key)
+        if not api_key:
+            raise FXMacroDataError(f"API key required for {what} endpoints.")
+        return {_http.API_KEY_HEADER: api_key}
 
     # ------------------------------------------------------------------
     # Macroeconomic indicator time-series
@@ -80,9 +154,7 @@ class AsyncClient:
             params["end_date"] = end_date
         if indicators:
             params["indicators"] = indicators
-        if not self.api_key:
-            raise FXMacroDataError("API key required for forex endpoints.")
-        headers = {"X-API-Key": self.api_key}
+        headers = self._required_key_headers("forex")
         return await self._request(url, params, headers)
 
     # ------------------------------------------------------------------
@@ -151,10 +223,8 @@ class AsyncClient:
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> dict:
-        if not self.api_key:
-            raise FXMacroDataError("API key required for commodities endpoints.")
+        headers = self._required_key_headers("commodities")
         url = f"{self.BASE_URL}/v1/commodities/{indicator.lower()}"
-        headers: dict[str, str] = {"X-API-Key": self.api_key}
         params: dict[str, str] = {}
         if start_date:
             params["start_date"] = start_date

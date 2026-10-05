@@ -35,19 +35,23 @@ def test_sync_request_sends_header_auth_and_filters_null_params(
     calls = []
 
     class FakeResponse:
+        status_code = 200
+        headers: dict = {}
+
         def raise_for_status(self) -> None:
             return None
 
         def json(self) -> dict:
             return {"data": [{"ok": True}]}
 
-    def fake_get(url, params=None, headers=None, timeout=None):
+    def fake_get(url, params=None, headers=None, timeout=None, **kwargs):
         calls.append(
             {
                 "url": url,
                 "params": params,
                 "headers": headers,
                 "timeout": timeout,
+                "allow_redirects": kwargs.get("allow_redirects"),
             }
         )
         return FakeResponse()
@@ -69,6 +73,7 @@ def test_sync_request_sends_header_auth_and_filters_null_params(
             "params": {"limit": 10},
             "headers": {"X-API-Key": "test-key"},
             "timeout": 30,
+            "allow_redirects": False,
         }
     ]
 
@@ -81,7 +86,7 @@ async def test_get_data_returns_top_level_data(monkeypatch: pytest.MonkeyPatch):
         url,
         params,
         api_key=None,
-        auth_mode="query",
+        auth_mode="header",
         retry_count=3,
         pause=0.1,
         timeout=30,

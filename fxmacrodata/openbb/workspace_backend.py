@@ -16,6 +16,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from requests import HTTPError
 
+from fxmacrodata.exceptions import FXMacroDataError
+
 from fxmacrodata.openbb.metadata import workspace_apps_json, workspace_widgets_json
 from fxmacrodata.openbb.utils.catalogue import flatten_catalogue_payload
 from fxmacrodata.openbb.utils.helpers import get_json
@@ -86,6 +88,10 @@ async def _proxy_json(
             except ValueError:
                 detail = exc.response.text
         raise HTTPException(status_code=status_code, detail=detail) from exc
+    except FXMacroDataError as exc:
+        # Refused redirect, malformed key or malformed upstream body; the
+        # message never contains the API key.
+        raise HTTPException(status_code=502, detail=str(exc)) from None
 
 
 def _rows(payload: Dict[str, Any]) -> List[Dict[str, Any]]:

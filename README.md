@@ -127,6 +127,30 @@ async def main():
 asyncio.run(main())
 ```
 
+### Timeouts and errors
+
+Every request has a 30-second timeout by default. Change it per client:
+
+```python
+Client(api_key="YOUR_API_KEY", timeout=60)            # seconds
+Client(api_key="YOUR_API_KEY", timeout=(3.05, 120))   # (connect, read)
+AsyncClient(api_key="YOUR_API_KEY", timeout=60)       # total seconds
+```
+
+All errors are `FXMacroDataError` or one of its subclasses:
+
+| Exception | Raised when |
+| --- | --- |
+| `FXMacroDataAPIError` | The API returns a non-200 status (`.status_code` is set). |
+| `FXMacroDataResponseError` | The API returns 200 but the body is an error message or not a JSON object. |
+| `FXMacroDataTimeoutError` | The request exceeds the timeout. |
+| `FXMacroDataTransportError` | The connection fails (DNS, TLS, network). |
+| `FXMacroDataRedirectError` | A redirect would send your API key to a different origin, so it is refused. |
+
+Your API key is never included in error messages, and it is only sent over
+HTTPS to the origin you configured: redirects to another host or to plain HTTP
+are refused rather than followed with the key attached.
+
 ---
 
 ## OpenBB Integration

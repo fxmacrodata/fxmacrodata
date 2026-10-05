@@ -10,6 +10,7 @@ from typing import Any, Dict, Mapping, Optional
 
 import requests
 
+from fxmacrodata import _http
 from fxmacrodata.openbb.constants import DEFAULT_BASE_URL
 
 logger = logging.getLogger(__name__)
@@ -46,40 +47,68 @@ def resolve_api_key(credentials: Optional[Mapping[str, str]]) -> Optional[str]:
     return None
 
 
+def _get_with_safe_redirects(
+    url: str,
+    params: Optional[Dict[str, Any]],
+    headers: Dict[str, str],
+    timeout: Any,
+) -> requests.Response:
+    """GET that only re-sends the API key on same-origin redirects."""
+    has_key = bool(headers)
+    _http.check_transport(url, has_key)
+    for _ in range(_http.MAX_REDIRECTS + 1):
+        resp = requests.get(
+            url,
+            params=params,
+            headers=headers or None,
+            timeout=timeout,
+            allow_redirects=False,
+        )
+        location = resp.headers.get("Location")
+        if resp.status_code in _http.REDIRECT_STATUSES and location:
+            url = _http.resolve_redirect(url, location, has_key)
+            params = None  # the Location already carries the query string
+            continue
+        return resp
+    raise _http.too_many_redirects()
+
+
 def _sync_request(
     url: str,
     params: Dict[str, Any],
     api_key: Optional[str] = None,
-    auth_mode: str = "query",
+    auth_mode: str = "header",
     retry_count: int = _DEFAULT_RETRY_COUNT,
     pause: float = _DEFAULT_RETRY_PAUSE,
     timeout: int = _DEFAULT_TIMEOUT,
 ) -> dict:
-    """Blocking GET request with simple retry logic."""
+    """Blocking GET request with simple retry logic.
+
+    The API key is always sent in the ``X-API-Key`` header. ``auth_mode`` is
+    accepted for backward compatibility only: the old ``"query"`` mode put the
+    key in the URL, where it surfaced in exception messages and logs.
+    """
     if retry_count < 1:
         raise ValueError(f"retry_count must be >= 1, got {retry_count}")
 
     clean_params: Dict[str, Any] = {k: v for k, v in params.items() if v is not None}
-    headers: Dict[str, str] = {}
-    if api_key:
-        if auth_mode == "header":
-            headers["X-API-Key"] = api_key
-        else:
-            clean_params["api_key"] = api_key
+    api_key = _http.clean_api_key(api_key)
+    headers: Dict[str, str] = {_http.API_KEY_HEADER: api_key} if api_key else {}
 
     last_exc: Optional[requests.RequestException] = None
     for attempt in range(retry_count):
         if attempt > 0:
             time.sleep(pause)
         try:
-            resp = requests.get(
-                url,
-                params=clean_params,
-                headers=headers or None,
-                timeout=timeout,
-            )
+            resp = _get_with_safe_redirects(url, clean_params, headers, timeout)
             resp.raise_for_status()
-            return resp.json()
+            try:
+                payload = resp.json()
+            except ValueError:
+                raise _http.invalid_json_error(
+                    resp.status_code, resp.headers.get("Content-Type")
+                ) from None
+            return _http.check_payload(payload, resp.status_code, api_key)
         except requests.RequestException as exc:
             last_exc = exc
             logger.warning(
@@ -87,7 +116,7 @@ def _sync_request(
                 attempt + 1,
                 retry_count,
                 url,
-                exc,
+                _http.redact(str(exc), api_key),
             )
     raise last_exc  # type: ignore[misc]
 
@@ -96,7 +125,7 @@ async def get_json(
     path: str,
     params: Optional[Dict[str, Any]] = None,
     api_key: Optional[str] = None,
-    auth_mode: str = "query",
+    auth_mode: str = "header",
     retry_count: int = _DEFAULT_RETRY_COUNT,
     pause: float = _DEFAULT_RETRY_PAUSE,
     timeout: int = _DEFAULT_TIMEOUT,
