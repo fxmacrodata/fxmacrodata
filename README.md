@@ -5,11 +5,11 @@
 ![License](https://img.shields.io/github/license/fxmacrodata/fxmacrodata?style=flat-square)
 ![Build](https://img.shields.io/github/actions/workflow/status/fxmacrodata/fxmacrodata/ci-cd.yml?style=flat-square&logo=github)
 
-The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators**, **forex prices**, **release calendars**, **COT positioning**, and **commodity prices** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=readme&utm_campaign=python_sdk).  
+The **FXMacroData Python SDK** provides a simple and efficient interface for fetching **macroeconomic indicators**, **forex prices**, **release calendars**, **COT positioning**, and **commodity prices** from [FXMacroData](https://fxmacrodata.com/?utm_source=github&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=readme).  
 
 Use synchronous and asynchronous clients to bring the data into research notebooks, backtests and applications.
 
-[Subscribe to FXMacroData](https://fxmacrodata.com/subscribe?utm_source=github&utm_medium=referral&utm_campaign=open_source_integrations&utm_content=python_sdk_subscribe) for non-USD data, full available history, FX, commodities and positioning. Use the public USD workflow to evaluate the integration before connecting your subscription.
+[Subscribe to FXMacroData](https://fxmacrodata.com/subscribe?utm_source=github&utm_medium=referral&utm_campaign=fxmacrodata&utm_content=subscribe) for non-USD data, full available history, FX, commodities and positioning. Use the public USD workflow to evaluate the integration before connecting your subscription.
 
 ---
 
