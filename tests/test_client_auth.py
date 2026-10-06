@@ -103,3 +103,45 @@ def test_commodities_require_api_key_before_request(monkeypatch: pytest.MonkeyPa
         Client().get_commodities("gold")
 
     assert called is False
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda c: c.get_indicator("usd", "inflation"),
+        lambda c: c.get_calendar("usd"),
+        lambda c: c.get_data_catalogue("usd"),
+        lambda c: c.get_cot("usd"),
+    ],
+)
+def test_usd_requests_send_configured_api_key(monkeypatch: pytest.MonkeyPatch, call):
+    """Subscribers must get the real-time USD feed, not the keyless delayed tier."""
+    calls = []
+
+    class FakeResponse:
+        status_code = 200
+        headers: dict = {}
+
+        def json(self) -> dict:
+            return {"data": []}
+
+    def fake_get(url, headers=None, params=None, **kwargs):
+        calls.append(headers)
+        return FakeResponse()
+
+    monkeypatch.setattr("fxmacrodata.client.requests.get", fake_get)
+
+    call(Client(api_key="test-key"))
+    call(Client())
+
+    assert calls == [{"X-API-Key": "test-key"}, {}]
+
+
+@pytest.mark.asyncio
+async def test_async_usd_requests_send_configured_api_key():
+    from fxmacrodata import AsyncClient
+
+    assert AsyncClient(api_key="test-key")._auth_headers("usd") == {
+        "X-API-Key": "test-key"
+    }
+    assert AsyncClient()._auth_headers("usd") == {}

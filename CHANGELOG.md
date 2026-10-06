@@ -44,6 +44,10 @@ recommended for everyone using an API key.
 
 ### Fixed
 
+- A configured API key is now sent on USD requests too. Previously USD calls
+  were always made without the key, so subscribers silently got the free
+  tier (15-minute delayed releases, 90-day history) instead of real-time,
+  full-history USD data.
 - An HTTP 200 whose body is HTML, empty, a JSON array/string/null, or an
   `{"error": ...}` / `{"detail": ...}` message now raises
   `FXMacroDataResponseError` instead of a raw `JSONDecodeError` or returning
@@ -61,5 +65,8 @@ message format. Two behaviour changes to check:
 
 - A request that takes longer than 30 seconds now raises
   `FXMacroDataTimeoutError`. Pass `timeout=None` to restore unlimited waits.
+- A configured key now applies to USD calls, so an invalid or expired key
+  raises `FXMacroDataAPIError` (401/403) on USD instead of quietly falling
+  back to the free tier. Use `Client()` with no key for anonymous USD access.
 - Code that caught `aiohttp.ClientError` or `asyncio.TimeoutError` from
   `AsyncClient` should catch `FXMacroDataTransportError` instead.

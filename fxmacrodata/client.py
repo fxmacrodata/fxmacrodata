@@ -72,16 +72,14 @@ class Client:
         return _http.check_payload(data, response.status_code, api_key)
 
     def _auth_headers(self, currency: str, *, required: bool = True) -> dict:
-        headers: dict[str, str] = {}
-        if currency != "usd":
-            api_key = _http.clean_api_key(self.api_key)
-            if required and not api_key:
-                raise FXMacroDataError(
-                    f"API key required for {currency.upper()} endpoints."
-                )
-            if api_key:
-                headers[_http.API_KEY_HEADER] = api_key
-        return headers
+        # A configured key is sent for every currency, USD included: keyless
+        # USD is the delayed, 90-day free tier, not the subscriber feed.
+        api_key = _http.clean_api_key(self.api_key)
+        if required and currency != "usd" and not api_key:
+            raise FXMacroDataError(
+                f"API key required for {currency.upper()} endpoints."
+            )
+        return {_http.API_KEY_HEADER: api_key} if api_key else {}
 
     def _required_key_headers(self, what: str) -> dict:
         api_key = _http.clean_api_key(self.api_key)
