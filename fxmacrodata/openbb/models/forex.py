@@ -8,7 +8,7 @@ Use the data catalogue or FXMacroData docs to discover supported currencies.
 from __future__ import annotations
 
 from datetime import date as dateType
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
@@ -48,7 +48,7 @@ class FXMacroDataFxHistoricalData(Data):
 class FXMacroDataFxHistoricalFetcher(
     Fetcher[
         FXMacroDataFxHistoricalQueryParams,
-        List[FXMacroDataFxHistoricalData],
+        list[FXMacroDataFxHistoricalData],
     ]
 ):
     """Fetch FX spot-rate history from FXMacroData."""
@@ -57,7 +57,7 @@ class FXMacroDataFxHistoricalFetcher(
 
     @staticmethod
     def transform_query(
-        params: Dict[str, Any],
+        params: dict[str, Any],
     ) -> FXMacroDataFxHistoricalQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataFxHistoricalQueryParams(**params)
@@ -65,9 +65,9 @@ class FXMacroDataFxHistoricalFetcher(
     @staticmethod
     async def aextract_data(
         query: FXMacroDataFxHistoricalQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract raw FX data from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_data, resolve_api_key
@@ -87,9 +87,9 @@ class FXMacroDataFxHistoricalFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataFxHistoricalQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataFxHistoricalData]:
+    ) -> list[FXMacroDataFxHistoricalData]:
         """Transform raw API records into validated data models.
 
         The API returns the rate as ``val``; this is renamed to ``close`` so

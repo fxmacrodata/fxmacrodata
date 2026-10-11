@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 
-def flatten_catalogue_payload(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+def flatten_catalogue_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
     """Flatten the FXMacroData catalogue payload into table-friendly rows."""
     catalogue = payload.get("catalogue") or {}
     coverage_rows = {
@@ -13,7 +13,7 @@ def flatten_catalogue_payload(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
         for row in payload.get("coverage", [])
         if isinstance(row, dict) and row.get("indicator")
     }
-    rows: List[Dict[str, Any]] = []
+    rows: list[dict[str, Any]] = []
 
     for indicator, meta in catalogue.items():
         if not isinstance(meta, dict):

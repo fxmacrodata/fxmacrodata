@@ -8,7 +8,7 @@ Use the data catalogue fetcher to discover supported currencies and indicators.
 from __future__ import annotations
 
 from datetime import date as dateType
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
@@ -66,7 +66,7 @@ class FXMacroDataMacroIndicatorsData(Data):
 class FXMacroDataMacroIndicatorsFetcher(
     Fetcher[
         FXMacroDataMacroIndicatorsQueryParams,
-        List[FXMacroDataMacroIndicatorsData],
+        list[FXMacroDataMacroIndicatorsData],
     ]
 ):
     """Fetch macroeconomic indicator time series from FXMacroData."""
@@ -75,7 +75,7 @@ class FXMacroDataMacroIndicatorsFetcher(
 
     @staticmethod
     def transform_query(
-        params: Dict[str, Any],
+        params: dict[str, Any],
     ) -> FXMacroDataMacroIndicatorsQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataMacroIndicatorsQueryParams(**params)
@@ -83,9 +83,9 @@ class FXMacroDataMacroIndicatorsFetcher(
     @staticmethod
     async def aextract_data(
         query: FXMacroDataMacroIndicatorsQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract raw indicator data from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_data, resolve_api_key
@@ -105,8 +105,8 @@ class FXMacroDataMacroIndicatorsFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataMacroIndicatorsQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataMacroIndicatorsData]:
+    ) -> list[FXMacroDataMacroIndicatorsData]:
         """Transform raw API records into validated data models."""
         return [FXMacroDataMacroIndicatorsData.model_validate(row) for row in data]

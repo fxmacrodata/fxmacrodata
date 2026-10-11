@@ -6,13 +6,14 @@ Endpoint: GET /v1/data_catalogue/{currency}
 from __future__ import annotations
 
 from datetime import date as dateType
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.abstract.query_params import QueryParams
-from fxmacrodata.openbb.utils.catalogue import flatten_catalogue_payload
 from pydantic import Field
+
+from fxmacrodata.openbb.utils.catalogue import flatten_catalogue_payload
 
 
 class FXMacroDataDataCatalogueQueryParams(QueryParams):
@@ -99,7 +100,7 @@ class FXMacroDataDataCatalogueData(Data):
 class FXMacroDataDataCatalogueFetcher(
     Fetcher[
         FXMacroDataDataCatalogueQueryParams,
-        List[FXMacroDataDataCatalogueData],
+        list[FXMacroDataDataCatalogueData],
     ]
 ):
     """Fetch the FXMacroData indicator catalogue for a currency."""
@@ -107,16 +108,16 @@ class FXMacroDataDataCatalogueFetcher(
     require_credentials = False
 
     @staticmethod
-    def transform_query(params: Dict[str, Any]) -> FXMacroDataDataCatalogueQueryParams:
+    def transform_query(params: dict[str, Any]) -> FXMacroDataDataCatalogueQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataDataCatalogueQueryParams(**params)
 
     @staticmethod
     async def aextract_data(
         query: FXMacroDataDataCatalogueQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract and flatten catalogue metadata from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_json, resolve_api_key
@@ -136,8 +137,8 @@ class FXMacroDataDataCatalogueFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataDataCatalogueQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataDataCatalogueData]:
+    ) -> list[FXMacroDataDataCatalogueData]:
         """Transform raw API records into validated data models."""
         return [FXMacroDataDataCatalogueData.model_validate(row) for row in data]

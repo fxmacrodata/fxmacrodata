@@ -13,7 +13,7 @@ traded on the Chicago Mercantile Exchange.
 from __future__ import annotations
 
 from datetime import date as dateType
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
@@ -101,7 +101,7 @@ class FXMacroDataCotData(Data):
 class FXMacroDataCotFetcher(
     Fetcher[
         FXMacroDataCotQueryParams,
-        List[FXMacroDataCotData],
+        list[FXMacroDataCotData],
     ]
 ):
     """Fetch CFTC Commitment of Traders positioning data from FXMacroData."""
@@ -109,16 +109,16 @@ class FXMacroDataCotFetcher(
     require_credentials = False
 
     @staticmethod
-    def transform_query(params: Dict[str, Any]) -> FXMacroDataCotQueryParams:
+    def transform_query(params: dict[str, Any]) -> FXMacroDataCotQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataCotQueryParams(**params)
 
     @staticmethod
     async def aextract_data(
         query: FXMacroDataCotQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract raw COT data from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_data, resolve_api_key
@@ -138,8 +138,8 @@ class FXMacroDataCotFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataCotQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataCotData]:
+    ) -> list[FXMacroDataCotData]:
         """Transform raw API records into validated data models."""
         return [FXMacroDataCotData.model_validate(row) for row in data]

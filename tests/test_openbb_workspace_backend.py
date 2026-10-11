@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import traceback
+
 import pytest
+import requests
 
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
-from fastapi.testclient import TestClient
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 from fxmacrodata.openbb import workspace_backend as backend
 
@@ -159,6 +162,119 @@ def test_release_calendar_endpoint_proxies_data_rows(monkeypatch: pytest.MonkeyP
             "auth_mode": "header",
         }
     ]
+
+
+@pytest.mark.parametrize("status_code", [401, 429])
+@pytest.mark.parametrize("error_origin", ["sanitized", "response"])
+def test_workspace_preserves_safe_upstream_status_without_error_details(
+    monkeypatch: pytest.MonkeyPatch,
+    status_code: int,
+    error_origin: str,
+):
+    """Safe status metadata must survive without exposing authenticated URLs."""
+    canary = "synthetic-workspace-canary"
+    authenticated_url = f"https://example.test/calendar?api_key={canary}"
+    error = requests.HTTPError("FXMacroData request failed")
+    if error_origin == "sanitized":
+        error.status_code = status_code
+        assert error.request is None
+        assert error.response is None
+    else:
+        request = requests.Request("GET", authenticated_url).prepare()
+        upstream = requests.Response()
+        upstream.status_code = status_code
+        upstream.url = authenticated_url
+        upstream.request = request
+        upstream._content = f'{{"detail": "{canary}"}}'.encode()
+        error = requests.HTTPError(
+            f"Request failed for {authenticated_url}",
+            request=request,
+            response=upstream,
+        )
+
+    async def fake_get_json(path, params=None, api_key=None, auth_mode="query"):
+        assert path == "/v1/calendar/usd"
+        assert api_key == canary
+        assert auth_mode == "header"
+        raise error
+
+    monkeypatch.setattr(backend, "get_json", fake_get_json)
+    client = TestClient(backend.app)
+
+    response = client.get(
+        "/release_calendar?currency=USD", headers={"X-API-Key": canary}
+    )
+
+    assert response.status_code == status_code
+    detail = response.json()["detail"]
+    assert isinstance(detail, str)
+    assert canary not in response.text
+    assert authenticated_url not in response.text
+    assert canary not in detail
+    assert authenticated_url not in detail
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status_code", [401, 429])
+@pytest.mark.parametrize("error_origin", ["sanitized", "response"])
+async def test_workspace_proxy_error_traceback_drops_authenticated_exception(
+    monkeypatch: pytest.MonkeyPatch,
+    status_code: int,
+    error_origin: str,
+):
+    """Raised proxy errors must detach upstream exceptions and secret URLs."""
+    canary = "synthetic-traceback-canary"
+    authenticated_url = f"https://example.test/calendar?api_key={canary}"
+    original = requests.HTTPError("FXMacroData request failed")
+    if error_origin == "sanitized":
+        original.status_code = status_code
+        assert original.request is None
+        assert original.response is None
+    else:
+        upstream_request = requests.Request("GET", authenticated_url).prepare()
+        upstream_response = requests.Response()
+        upstream_response.status_code = status_code
+        upstream_response.url = authenticated_url
+        upstream_response.request = upstream_request
+        original = requests.HTTPError(
+            f"Request failed for {authenticated_url}",
+            request=upstream_request,
+            response=upstream_response,
+        )
+
+    async def fake_get_json(path, params=None, api_key=None, auth_mode="query"):
+        assert api_key == canary
+        assert auth_mode == "header"
+        raise original
+
+    monkeypatch.setattr(backend, "get_json", fake_get_json)
+    request = backend.Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/release_calendar",
+            "headers": [(b"x-api-key", canary.encode())],
+            "query_string": b"",
+        }
+    )
+
+    with pytest.raises(backend.HTTPException) as raised:
+        await backend._proxy_json(request, "/v1/calendar/usd")
+
+    error = raised.value
+    rendered_traceback = "".join(
+        traceback.format_exception(type(error), error, error.__traceback__)
+    )
+    assert error.status_code == status_code
+    assert error.__cause__ is None
+    assert error.__context__ is None
+    assert all(value is not original for value in vars(error).values())
+    assert all(value is not original for value in error.args)
+    assert getattr(error, "request", None) is None
+    assert getattr(error, "response", None) is None
+    for rendered in (str(error), str(error.detail), rendered_traceback):
+        assert canary not in rendered
+        assert authenticated_url not in rendered
 
 
 def test_openbb_platform_api_can_import_workspace_backend():

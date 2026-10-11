@@ -1,5 +1,7 @@
-import requests
 from typing import Optional
+
+import requests
+
 from .exceptions import FXMacroDataError
 
 
@@ -13,7 +15,7 @@ class Client:
         try:
             response = requests.get(url, headers=headers, params=params)
         except Exception as e:
-            raise FXMacroDataError(f"Request failed: {e}")
+            raise FXMacroDataError(f"Request failed: {e}") from e
         if response.status_code != 200:
             raise FXMacroDataError(f"{response.status_code} - {response.text}")
         return response.json()

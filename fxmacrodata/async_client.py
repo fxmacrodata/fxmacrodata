@@ -1,5 +1,7 @@
-import aiohttp  # type: ignore
 from typing import Optional
+
+import aiohttp  # type: ignore
+
 from .exceptions import FXMacroDataError
 
 

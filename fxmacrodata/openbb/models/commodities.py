@@ -9,7 +9,7 @@ silver.
 from __future__ import annotations
 
 from datetime import date as dateType
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
@@ -61,7 +61,7 @@ class FXMacroDataCommodityData(Data):
 class FXMacroDataCommodityFetcher(
     Fetcher[
         FXMacroDataCommodityQueryParams,
-        List[FXMacroDataCommodityData],
+        list[FXMacroDataCommodityData],
     ]
 ):
     """Fetch commodity prices from FXMacroData."""
@@ -69,16 +69,16 @@ class FXMacroDataCommodityFetcher(
     require_credentials = False
 
     @staticmethod
-    def transform_query(params: Dict[str, Any]) -> FXMacroDataCommodityQueryParams:
+    def transform_query(params: dict[str, Any]) -> FXMacroDataCommodityQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataCommodityQueryParams(**params)
 
     @staticmethod
     async def aextract_data(
         query: FXMacroDataCommodityQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract raw commodity data from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_data, resolve_api_key
@@ -98,8 +98,8 @@ class FXMacroDataCommodityFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataCommodityQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataCommodityData]:
+    ) -> list[FXMacroDataCommodityData]:
         """Transform raw API records into validated data models."""
         return [FXMacroDataCommodityData.model_validate(row) for row in data]

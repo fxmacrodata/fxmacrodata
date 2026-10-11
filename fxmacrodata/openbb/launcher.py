@@ -5,8 +5,9 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, NoReturn, Optional
+from typing import NoReturn, Optional
 
 
 def _find_console_script(executable_name: str) -> Optional[str]:
@@ -40,7 +41,7 @@ def _run_console_script(
     raise SystemExit(subprocess.call(command))
 
 
-def platform_api(argv: Optional[List[str]] = None) -> NoReturn:
+def platform_api(argv: Optional[list[str]] = None) -> NoReturn:
     """Launch OpenBB Platform API with the installed FXMacroData extension."""
     _run_console_script(
         "openbb-api",
@@ -49,7 +50,7 @@ def platform_api(argv: Optional[List[str]] = None) -> NoReturn:
     )
 
 
-def mcp(argv: Optional[List[str]] = None) -> NoReturn:
+def mcp(argv: Optional[list[str]] = None) -> NoReturn:
     """Launch OpenBB MCP with the installed FXMacroData extension."""
     _run_console_script(
         "openbb-mcp",

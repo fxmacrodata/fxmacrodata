@@ -1,6 +1,8 @@
 import os
+
 import pytest
 from dotenv import load_dotenv
+
 from fxmacrodata.client import Client
 from fxmacrodata.exceptions import FXMacroDataError
 

@@ -9,7 +9,7 @@ JPY, KRW, MXN, NOK, NZD, PLN, SEK, SGD, USD.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
@@ -50,7 +50,7 @@ class FXMacroDataReleaseCalendarData(Data):
 class FXMacroDataReleaseCalendarFetcher(
     Fetcher[
         FXMacroDataReleaseCalendarQueryParams,
-        List[FXMacroDataReleaseCalendarData],
+        list[FXMacroDataReleaseCalendarData],
     ]
 ):
     """Fetch economic release-calendar entries from FXMacroData."""
@@ -59,7 +59,7 @@ class FXMacroDataReleaseCalendarFetcher(
 
     @staticmethod
     def transform_query(
-        params: Dict[str, Any],
+        params: dict[str, Any],
     ) -> FXMacroDataReleaseCalendarQueryParams:
         """Validate and transform raw query parameters."""
         return FXMacroDataReleaseCalendarQueryParams(**params)
@@ -67,15 +67,15 @@ class FXMacroDataReleaseCalendarFetcher(
     @staticmethod
     async def aextract_data(
         query: FXMacroDataReleaseCalendarQueryParams,
-        credentials: Optional[Dict[str, str]],
+        credentials: Optional[dict[str, str]],
         **kwargs: Any,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract raw calendar data from the FXMacroData API."""
         # pylint: disable=import-outside-toplevel
         from fxmacrodata.openbb.utils.helpers import get_data, resolve_api_key
 
         api_key = resolve_api_key(credentials)
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if query.indicator:
             params["indicator"] = query.indicator.lower()
         return await get_data(
@@ -87,8 +87,8 @@ class FXMacroDataReleaseCalendarFetcher(
     @staticmethod
     def transform_data(
         query: FXMacroDataReleaseCalendarQueryParams,
-        data: List[Dict],
+        data: list[dict],
         **kwargs: Any,
-    ) -> List[FXMacroDataReleaseCalendarData]:
+    ) -> list[FXMacroDataReleaseCalendarData]:
         """Transform raw API records into validated data models."""
         return [FXMacroDataReleaseCalendarData.model_validate(row) for row in data]

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, List
+from typing import Any
 
 CATEGORY = "FXMacroData"
 SOURCE = ["FXMacroData"]
@@ -15,7 +15,7 @@ def _param(
     description: str,
     value: Any = None,
     param_type: str = "text",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     return {
         "paramName": name,
         "label": label,
@@ -26,7 +26,7 @@ def _param(
     }
 
 
-def _table_config(width: int = 20, height: int = 12) -> Dict[str, Any]:
+def _table_config(width: int = 20, height: int = 12) -> dict[str, Any]:
     return {
         "category": CATEGORY,
         "searchCategory": CATEGORY,
@@ -43,7 +43,7 @@ def _table_config(width: int = 20, height: int = 12) -> Dict[str, Any]:
     }
 
 
-WIDGET_CONFIGS: Dict[str, Dict[str, Any]] = {
+WIDGET_CONFIGS: dict[str, dict[str, Any]] = {
     "data_catalogue": {
         **_table_config(),
         "name": "FXMacroData Data Catalogue",
@@ -214,7 +214,7 @@ WIDGET_CONFIGS: Dict[str, Dict[str, Any]] = {
 }
 
 
-def _mcp_config(command_name: str) -> Dict[str, Any]:
+def _mcp_config(command_name: str) -> dict[str, Any]:
     return {
         "expose": True,
         "mcp_type": "tool",
@@ -222,12 +222,12 @@ def _mcp_config(command_name: str) -> Dict[str, Any]:
     }
 
 
-MCP_CONFIGS: Dict[str, Dict[str, Any]] = {
+MCP_CONFIGS: dict[str, dict[str, Any]] = {
     command_name: _mcp_config(command_name) for command_name in WIDGET_CONFIGS
 }
 
 
-def openapi_extra(command_name: str) -> Dict[str, Any]:
+def openapi_extra(command_name: str) -> dict[str, Any]:
     """Return OpenAPI metadata consumed by OpenBB Workspace and MCP tooling."""
     return {
         "widget_config": deepcopy(WIDGET_CONFIGS[command_name]),
@@ -235,9 +235,9 @@ def openapi_extra(command_name: str) -> Dict[str, Any]:
     }
 
 
-def workspace_widgets_json() -> Dict[str, Dict[str, Any]]:
+def workspace_widgets_json() -> dict[str, dict[str, Any]]:
     """Return static Workspace widget definitions for the custom backend."""
-    widgets: Dict[str, Dict[str, Any]] = {}
+    widgets: dict[str, dict[str, Any]] = {}
     endpoint_map = {
         "data_catalogue": "catalogue",
         "macro_indicators": "macro_indicator",
@@ -276,7 +276,7 @@ def workspace_widgets_json() -> Dict[str, Dict[str, Any]]:
     return widgets
 
 
-def workspace_apps_json() -> List[Dict[str, Any]]:
+def workspace_apps_json() -> list[dict[str, Any]]:
     """Return OpenBB Workspace app definitions for FXMacroData widgets."""
     return [
         {

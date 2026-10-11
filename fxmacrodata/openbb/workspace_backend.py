@@ -7,9 +7,9 @@ Run locally:
 
 from __future__ import annotations
 
-from datetime import date
 import os
-from typing import Any, Dict, List, Optional
+from datetime import date
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -68,8 +68,8 @@ def _api_key_from_request(request: Request) -> Optional[str]:
 async def _proxy_json(
     request: Request,
     path: str,
-    params: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    params: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
     try:
         return await get_json(
             path,
@@ -78,31 +78,32 @@ async def _proxy_json(
             auth_mode="header",
         )
     except HTTPError as exc:
-        status_code = exc.response.status_code if exc.response is not None else 502
-        detail = "FXMacroData request failed"
-        if exc.response is not None:
-            try:
-                detail = exc.response.json()
-            except ValueError:
-                detail = exc.response.text
-        raise HTTPException(status_code=status_code, detail=detail) from exc
+        status_code = getattr(exc, "status_code", None)
+        if status_code is None and exc.response is not None:
+            status_code = exc.response.status_code
+        if not isinstance(status_code, int) or not 400 <= status_code <= 599:
+            status_code = 502
+        error = HTTPException(
+            status_code=status_code, detail="FXMacroData request failed"
+        )
+    raise error from None
 
 
-def _rows(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+def _rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
     data = payload.get("data", [])
     return data if isinstance(data, list) else []
 
 
-def _widgets_json() -> Dict[str, Dict[str, Any]]:
+def _widgets_json() -> dict[str, dict[str, Any]]:
     return workspace_widgets_json()
 
 
-def _apps_json() -> List[Dict[str, Any]]:
+def _apps_json() -> list[dict[str, Any]]:
     return workspace_apps_json()
 
 
 @app.get("/")
-def root() -> Dict[str, str]:
+def root() -> dict[str, str]:
     """Backend metadata."""
     return {
         "name": APP_TITLE,
@@ -113,7 +114,7 @@ def root() -> Dict[str, str]:
 
 
 @app.get("/health")
-def health() -> Dict[str, bool]:
+def health() -> dict[str, bool]:
     """Health check endpoint."""
     return {"ok": True}
 
@@ -137,7 +138,7 @@ async def catalogue(
     indicator: Optional[str] = None,
     include_coverage: bool = True,
     include_capabilities: bool = False,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return flattened indicator catalogue rows."""
     payload = await _proxy_json(
         request,
@@ -156,7 +157,7 @@ async def release_calendar(
     request: Request,
     currency: str = "USD",
     indicator: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return release-calendar rows."""
     payload = await _proxy_json(
         request,
@@ -173,7 +174,7 @@ async def macro_indicator(
     indicator: str,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return macro indicator history rows."""
     payload = await _proxy_json(
         request,
@@ -190,7 +191,7 @@ async def forex(
     quote: str,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return FX spot-rate history rows."""
     payload = await _proxy_json(
         request,
@@ -206,7 +207,7 @@ async def cot(
     currency: str,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return COT positioning rows."""
     payload = await _proxy_json(
         request,
@@ -222,7 +223,7 @@ async def commodity(
     indicator: str,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Return commodity price history rows."""
     payload = await _proxy_json(
         request,

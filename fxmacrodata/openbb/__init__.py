@@ -57,13 +57,13 @@ else:
     )
 
     __all__ = [
-        "fxmacrodata_provider",
-        "FXMacroDataCotFetcher",
         "FXMacroDataCommodityFetcher",
+        "FXMacroDataCotFetcher",
         "FXMacroDataDataCatalogueFetcher",
         "FXMacroDataFxHistoricalFetcher",
         "FXMacroDataMacroIndicatorsFetcher",
         "FXMacroDataReleaseCalendarFetcher",
+        "fxmacrodata_provider",
     ]
 
     fxmacrodata_provider = _OpenBBProvider(
